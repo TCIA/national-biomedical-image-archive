@@ -42,7 +42,7 @@ public class DownloadManagerFrame extends JFrame implements Observer {
 
     /* Download table's data model. */
     private DownloadsTableModel tableModel;
-    private String errorText="An error has occurred. Please re-construct the data basket with un-downloaded image series.";
+    private String errorText="An error has occurred. We will keep trying the failed downloads until we either download the data, or you exit the download manager.";  // lrt - changed to reflect that we will retry
 
     /* Table showing downloads. */
     private JTable table;
@@ -283,7 +283,7 @@ public class DownloadManagerFrame extends JFrame implements Observer {
                     pool.assign(tableModel.getDownload(i));
                     tableModel.getDownload(i).addPropertyChangeListener(propertyChangeListener);
                 }
-                pool.addThreadPoolListener(new ButtonUpdater(pauseButton, resumeButton));
+                pool.addThreadPoolListener(new ButtonUpdater(pauseButton, resumeButton, errorLabel));  // lrt - changed to add errorLabel as a param
             }
         });
         pauseButton.setEnabled(true);
@@ -309,7 +309,11 @@ public class DownloadManagerFrame extends JFrame implements Observer {
         for (int i=0;i<size;i++) {
         	AbstractSeriesDownloader sd = tableModel.getDownload(i);
 
-            if(sd.getStatus() == AbstractSeriesDownloader.PAUSED || sd.getStatus() == AbstractSeriesDownloader.NOT_STARTED){
+        	// Changed by lrt for tcia -
+        	//    Re-queue failed downloads, since they often succeed on retry
+            if(sd.getStatus() == AbstractSeriesDownloader.PAUSED 
+            		|| sd.getStatus() == AbstractSeriesDownloader.NOT_STARTED
+            		|| sd.getStatus() == AbstractSeriesDownloader.ERROR){
                 pool.assign(tableModel.getDownload(i));
             }
 
@@ -372,8 +376,13 @@ public class DownloadManagerFrame extends JFrame implements Observer {
         public void propertyChange(PropertyChangeEvent evt) {
             if("status".equals(evt.getPropertyName())){
                 int status = Integer.parseInt(evt.getNewValue().toString());
-                if(AbstractSeriesDownloader.ERROR == status && !errorLabel.isVisible()){
-                    errorLabel.setVisible(true);
+		// Changed by lrt for tcia -
+		//    Re-queue failed download, since they often succeed on retry
+                if(AbstractSeriesDownloader.ERROR == status){
+		    pool.assign((Runnable)evt.getSource());
+		    if (!errorLabel.isVisible()){
+                        errorLabel.setVisible(true);
+		    }
                 }
             }
         }

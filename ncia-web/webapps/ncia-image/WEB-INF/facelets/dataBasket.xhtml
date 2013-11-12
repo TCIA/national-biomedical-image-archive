@@ -63,6 +63,11 @@
                        target="_blank">here</a>
                     <span>.</span>
                   </h:panelGroup>
+
+	        <h:panelGroup rendered="#{basketBean.basketSeriesCount >= 3500}">
+                    <span><br></br><br></br><b>You have more than 3500 series in your basket.  The download manager may fail to start.</b></span>
+		<span><br></br>Please break your basket into smaller pieces to download.</span>
+                  </h:panelGroup>
                             
                   <!--  only relevant when done zipping... but harmless to "show" -->
                   <!--  updates the server state that downloading is done

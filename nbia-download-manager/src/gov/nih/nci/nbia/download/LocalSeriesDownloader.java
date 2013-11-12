@@ -106,6 +106,13 @@ public class LocalSeriesDownloader extends AbstractSeriesDownloader {
 
     private void connectAndReadFromURL(URL url) throws Exception {
         HttpClient httpClient = new HttpClient();
+        // Additions by lrt for tcia - 
+        //    attempt to reduce errors going through a Coyote Point Equalizer load balance switch 
+        httpClient.getParams().setParameter("http.socket.timeout", new Integer(12000));
+        httpClient.getParams().setParameter("http.socket.receivebuffer", new Integer(16384));
+        httpClient.getParams().setParameter("http.tcp.nodelay", true);
+        httpClient.getParams().setParameter("http.connection.stalecheck", false);
+        // end lrt additions
 
         PostMethod postMethod = new PostMethod(url.toString());
         postMethod.addParameter("userId", this.userId);
@@ -149,6 +156,11 @@ public class LocalSeriesDownloader extends AbstractSeriesDownloader {
         TarArchiveInputStream zis = new TarArchiveInputStream(is);
 
         int imageCnt = 0;
+	// Begin lrt additions
+	imageCnt = sopUidsList.size(); // needed for pause/resume, and for error recovery
+	int downloadedImgSize = 0;
+	int downloadedAnnoSize = 0;
+	// End lrt additions
         try {
         	//the pause button affects this loop
         	//per tar entry, will check status... which pause button could
@@ -160,12 +172,17 @@ public class LocalSeriesDownloader extends AbstractSeriesDownloader {
                     status = COMPLETE;
                     break;
                 }
-
+		
+		// Begin lrt additions
+		long fileSize = tarArchiveEntry.getSize();
+		int startDownloaded = downloaded;
+		// End lrt additions
+		
                 String sop = tarArchiveEntry.getName();
                 int pos = sop.indexOf(".dcm");
                 OutputStream outputStream = null;
                 if(pos > 0){
-                    sopUidsList.add(sop.substring(0, pos));
+                    // sopUidsList.add(sop.substring(0, pos)); - lrt moved to below, after file size check
                     outputStream = new FileOutputStream(location  + File.separator + StringUtil.displayAsSixDigitString(imageCnt)+".dcm");
                 }
                 else {
@@ -181,6 +198,22 @@ public class LocalSeriesDownloader extends AbstractSeriesDownloader {
                 }
                 
                 imageCnt += 1;
+		// Begin lrt additions
+		int bytesDownloaded = downloaded - startDownloaded;
+		if (bytesDownloaded != fileSize) {
+			System.out.println(this.seriesInstanceUid+" file size mismatch for instance "+sop);
+			error();
+		}
+		else {
+			if(pos > 0){ // image file
+				downloadedImgSize += bytesDownloaded;
+				sopUidsList.add(sop.substring(0, pos));
+			}
+			else { // annotation file
+				downloadedAnnoSize += bytesDownloaded;
+			}
+		}
+		// End lrt additions
             }                    
         }
         finally {
@@ -188,6 +221,24 @@ public class LocalSeriesDownloader extends AbstractSeriesDownloader {
                 zis.close();
             }
         }
+	// Begin lrt additions
+	if (status == COMPLETE) {
+		if (sopUidsList.size() != Integer.valueOf(numberOfImages).intValue()) {
+			System.out.println(this.seriesInstanceUid+" number of image files mismatch.  Was "+sopUidsList.size()+" should be "+numberOfImages);
+			error();
+		}
+		/* Cannot use this sanity check, since image sizes are not always recorded correct in NBIA 5.0 - lrt
+		else if (downloadedImgSize != imagesSize) {
+			System.out.println(this.seriesInstanceUid+" total size of image files mismatch.  Was "+downloadedImgSize+" should be "+imagesSize);
+			error();
+		}
+		*/
+		else if (downloadedAnnoSize != annoSize) {
+			System.out.println(this.seriesInstanceUid+" total size of annotation files mismatch.  Was "+downloadedAnnoSize+" should be "+annoSize);
+			error();
+		}
+	}
+	// End lrt additions
     }
 
 

@@ -203,10 +203,21 @@ public abstract class AbstractSeriesDownloader extends Observable implements Run
 
         }
         catch (Exception e){
-            //System.out.println("Exception: " + e);
+        	//Changed by lrt for tcia -  we do wish to know what happened for debugging purposes.
+            System.out.println("Exception: " + e);
+            e.printStackTrace();
             error();
-            throw new RuntimeException(e);
-        }
+            // Changed by lrt for tcia -
+            //    keep thread alive to work on other downloads, 
+            //    but wait a moment in case there is a network problem
+            //throw new RuntimeException(e);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+       }
         long end = System.currentTimeMillis();
 
         System.out.println("total download time: " + (end - start)/1000 + " s.");
