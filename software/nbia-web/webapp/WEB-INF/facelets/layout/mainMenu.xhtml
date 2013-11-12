@@ -82,6 +82,28 @@ L-->
       </td>
     </f:subview>
  
+    <!-- link post2 begins -->
+    <f:subview id="queryToolSubview" rendered="#{securityBean.loggedIn}">
+      <td height="20" class="mainMenuItem"
+          onmouseover="changeMenuStyle(this,'mainMenuItemOver'),showCursor()"
+          onmouseout="changeMenuStyle(this,'mainMenuItem'),hideCursor()">
+         <a class="mainMenuLink" 
+           style="color:#fff"
+           onclick="window.open('https://public.cancerimagingarchive.net/ncia/QueryToolDownload', 'new' ,'screenX=0,screenY=0,status=yes,toolbar=no,menubar=no,location=no,width=750,height=700,scrollbars=yes,resizable=yes')">
+          <h:outputText value="Search NLST Data"/>
+         </a>
+      </td>
+      
+      <!-- link post2 ends -->
+      
+      <td>
+        <img src="images/mainMenuSeparator.gif" 
+             width="1" 
+             height="16"
+             alt="" />
+      </td>
+    </f:subview>
+
     <f:subview id="simpleSearchForGuestSubview" 
                rendered="#{anonymousLoginBean.simpleSearchView and empty sessionScope.originalRequest}">
       <td height="20" class="mainMenuItem"
@@ -129,8 +151,9 @@ L-->
         onmouseout="changeMenuStyle(this,'mainMenuItem'),hideCursor()">
       <a class="mainMenuLink" 
          style="color:#fff" 
-         onclick="window.open('https://wiki.nci.nih.gov/x/zAWwB', 'new' ,'screenX=0,screenY=0,status=yes,toolbar=no,menubar=no,location=no,width=750,height=700,scrollbars=yes,resizable=yes')">
-        <h:outputText value="#{msg.menu_help}"/>
+         onclick="window.open('http://www.cancerimagingarchive.net/support.html', 'new' ,'screenX=0,screenY=0,status=yes,toolbar=no,menubar=no,location=no,width=1200,height=700,scrollbars=yes,resizable=yes')">
+           <!-- <h:outputText value="#{msg.menu_help}"/> -->
+           <h:outputText value="Support"/>
       </a>
     </td>
     <!-- link 5 ends -->

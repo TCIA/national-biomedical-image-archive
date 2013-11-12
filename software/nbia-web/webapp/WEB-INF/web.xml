@@ -251,6 +251,19 @@ L-->
 
 <!--end of CSRF-->
 
+  <!-- Steve Moore 2012.10.31 This supports the link to compute and provide the
+	JNLP file used for Query Tool
+  -->
+  <servlet>
+    <servlet-name>ServletName</servlet-name>
+    <servlet-class>edu.wustl.mir.erl.tcia.nlst.QueryToolDownload</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ServletName</servlet-name>
+    <url-pattern>/QueryToolDownload</url-pattern>
+  </servlet-mapping>
+  <!-- Steve Moore Query Tool end -->
+
   <servlet-mapping>
     <servlet-name>publicThumbnailServlet</servlet-name>
     <url-pattern>/publicThumbnails</url-pattern>

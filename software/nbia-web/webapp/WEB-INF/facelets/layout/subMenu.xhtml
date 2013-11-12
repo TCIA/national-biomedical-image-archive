@@ -19,25 +19,6 @@ L-->
 
 <table summary="" cellpadding="0" cellspacing="0" border="0" width="130" height="100%">
 
-  <tr>
-    <td height="22" colspan="2" class="subMenuPrimaryTitle">
-      <h:outputText value="#{msg.menu_tools}" />
-    </td>
-  </tr>
-  
-  <tr>
-    <td colspan="2" class="subMenuPrimaryItems">
-      <div>
-        <img src="images/subMenuArrow.gif" width="5" height="5" alt="" />
-        <a href="#" 
-           class="subMenuPrimary"
-           onclick="window.open('/ncia/imageViewers.jsf', 'new' ,'screenX=0,screenY=0,status=yes,toolbar=no,menubar=no,location=no,width=550,height=500,scrollbars=yes,resizable=yes')">
-          <h:outputText value="#{msg.menu_dicomViewers}" />
-        </a>
-      </div>
-    </td>
-  </tr>
-  
   <f:subview id="loginView" rendered="#{securityBean.loggedIn}">
      <tr>
       <td height="22" valign="middle" class="subMenuPrimaryTitle">
@@ -263,8 +244,8 @@ L-->
     </f:subview>
        
 		<tr>
-			<td height="21" colspan="2" class="subMenuPrimaryTitle">
-				<h:outputText value="#{msg.menu_quickLinks}" />
+      <td height="20" colspan="2" class="subMenuPrimaryTitle">
+        <!-- <h:outputText value="#{msg.menu_quickLinks}" /> -->
 
 				<!-- anchor to skip sub menu -->
 				<a href="#content">
