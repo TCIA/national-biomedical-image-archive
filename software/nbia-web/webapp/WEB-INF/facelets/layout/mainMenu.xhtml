@@ -32,7 +32,8 @@ L-->
              border="0" />
       </a>
     </td>
-
+    
+	
     <!-- link 1 begins -->
     <f:subview id="homeLinkSubview" rendered="#{securityBean.loggedIn}">
       <td height="20" class="mainMenuItem"
@@ -64,12 +65,25 @@ L-->
     
     <!-- link 2 begins -->
     <f:subview id="simpleSearchSubview" rendered="#{securityBean.loggedIn}">
-      <td height="20" class="mainMenuItem"
-          onmouseover="changeMenuStyle(this,'mainMenuItemOver'),showCursor()"
-          onmouseout="changeMenuStyle(this,'mainMenuItem'),hideCursor()">
-        <h:commandLink action="#{searchWorkflowBean.newSimpleSearch}"
-                       value="#{msg.common_searchImages}" 
-                       styleClass="mainMenuLink" /> 
+      <td height="20" class="mainMenuItem">
+         <h:outputText value="#{msg.common_searchImages}" />
+      	 <br/>
+      	<ul >
+      	    <li>
+	         <h:commandLink action="#{searchWorkflowBean.newSimpleSearch}"  value="#{msg.common_simpleSearch}"/>
+              </li> 
+              <li>
+	      	         
+	      	         <h:commandLink action="#{searchWorkflowBean.newFreeTextSearch}"
+                                         value="Text Search"/>
+              </li> 
+              <li>
+	      	         
+	      	         <h:commandLink action="#{searchWorkflowBean.newDynamicSearch}"
+                                         value="Advanced Search"/>
+              </li> 
+    	  </ul>  
+      
       </td>
       
       <!-- link 2 ends -->
@@ -124,6 +138,7 @@ L-->
       </td>
     </f:subview>
     
+    
     <!-- link 4 begins -->
     <f:subview id="databasketSubview" rendered="#{securityBean.loggedIn}">
       <td height="20" class="mainMenuItem"
@@ -142,6 +157,222 @@ L-->
       </td>      
     </f:subview>
     <!-- link 4 ends -->
+    <td  class="mainMenuItem">
+	      <h:outputText value="#{msg.menu_tools}" />
+	 
+	 <br/>
+	<ul >
+	    <li>
+	           <a href="#"
+	           onclick="window.open('/ncia/imageViewers.jsf', 'new' ,'screenX=0,screenY=0,status=yes,toolbar=no,menubar=no,location=no,width=550,height=500,scrollbars=yes,resizable=yes')">
+	          <h:outputText value="#{msg.menu_dicomViewers}" />
+	        </a>
+	    	
+    	    </li>
+    	    
+    		
+    	
+    	  <f:subview id="queryView" rendered="#{securityBean.hasLoggedInAsRegisteredUser}">
+	    
+	  
+	      <li>
+	        <h:commandLink id="viewSavedQueriesLink"
+	                       action="#{savedQueryBean.viewSavedQueries}"
+	                       value="#{msg.menu_viewQueries}"/>
+	        
+	        (
+	        <f:verbatim>&amp;nbsp;</f:verbatim>
+	        <h:outputText value="#{savedQueryBean.savedQueryCount}" />
+	        <f:verbatim>&amp;nbsp;</f:verbatim>
+	        <h:outputText value="#{msg.menu_savedQueries}" /> 
+	        )
+	        
+	      </li>
+	   
+	      <li>
+	    
+	        <h:commandLink action="#{savedQueryBean.viewQueryHistory}"
+	                       value="#{msg.menu_queryHistory}"/>  
+	                       
+	      </li>
+	    
+	    </f:subview>
+	    <f:subview id="refImageView" rendered="#{ispyBean.isQueryFromUrl}">
+	     
+	        <li>
+	          
+	          <h:commandLink action="#{ispyBean.viewRefImage}"
+	                         value="#{msg.menu_queryRefImages}" />
+	                         
+	                        
+	        </li>
+	      
+   	    </f:subview>
+   	 
+   	 
+   	 <f:subview id="changePasswordView"
+	                  rendered="#{securityBean.changePassword}">
+	      
+	           <li>
+	               <h:outputLink value="#{msg.account_support_NCIPwdStation}"
+	                             target="blank" 
+	                             >
+	                 <h:outputText value="#{msg.change_password}" />
+	               </h:outputLink>
+	             
+	           </li>
+	         
+	    </f:subview>       
+	    <f:subview id="customizedListView"
+	                  rendered="#{securityBean.hasLoggedInAsRegisteredUser}">
+	       
+	           <li>
+	             
+	               <h:commandLink id="createCustomSeriesListMenuItem"
+	                              action="#{customSeriesListBean.createListFromLink}"
+	                              value="Create Shared List" />
+	                              
+	             
+	           </li>
+	        
+	           <li>
+	             
+	               <h:commandLink id="editCustomSeriesListMenuItem"
+	                              action="#{editCustomSeriesListBean.viewCreatedLists}"
+	                              value="Edit Shared List" />
+	                              
+	                              
+	            </li>
+	               
+	      </f:subview>
+	      <f:subview id="searchListView" rendered="#{securityBean.loggedIn}">
+	         
+	           <li>
+	             
+	               <h:commandLink id="searchCustomSeriesListMenuItem"
+	                              action="searchCustomSeriesList"
+	                              value="Search Shared List" />
+	                              
+	             
+	           </li>
+	                
+	       </f:subview>
+   
+   	 
+   	 
+   	 
+   	 
+   	 
+   	 
+   	 
+   	 
+   	 
+   	 
+    	</ul>
+    </td>
+    
+     <td>
+                <img src="images/mainMenuSeparator.gif" 
+                     width="1" 
+                     height="16"
+                     alt="" />
+      </td>   
+    
+    
+     <f:subview id="adminToolsView" rendered="#{securityBean.loggedIn and (securityBean.hasQaRole or securityBean.hasSuperCuratorRole or seriesDeletionBean.showDeletionLink or securityBean.hasCollectionDescRole)}">
+          
+            <td class="mainMenuItem">
+              <h:outputText value="Admin" />
+            <br/>
+            <ul>
+            
+          <f:subview id="qcToolView" rendered="#{securityBean.hasQaRole}">
+            
+              <li>
+               
+                  
+                  <h:commandLink action="#{qcToolBean.performQc}" 
+                                 value="#{msg.menu_qcTool}" />
+                                 
+              </li>    
+              
+            
+          </f:subview>
+          
+          <f:subview id="qcToolDeleteView" rendered="#{securityBean.hasSuperCuratorRole}">
+            
+              <li>
+                
+                  
+                  <h:commandLink action="#{qcToolBean.performDelete}" 
+                                 value="#{msg.menu_qcDelete}" />   
+                                   
+                
+              </li>
+              
+          </f:subview>
+          <f:subview id="sharedListDeleteView" rendered="#{securityBean.hasSuperCuratorRole}">
+            
+              <li>
+             
+                  
+                  <h:commandLink action="manageCustomList"
+                                 value="Manage Shared List" />     
+                                  
+                
+             </li>
+          </f:subview>
+          <f:subview id="feedbackView"
+                     rendered="#{securityBean.hasFeedbackRole}">
+            
+              <li>
+                
+                  <h:commandLink id="submissionReportMenuItem"
+                                 action="submissionReports"
+                                 value="View Submission Reports" />
+                                 
+              </li>
+              
+          </f:subview>
+          <f:subview id="deletionImageView" 
+                     rendered="#{seriesDeletionBean.showDeletionLink}">
+            
+              <li>
+                
+                  <h:commandLink id="submissionReportMenuItem"
+                                 action="#{seriesDeletionBean.loadDeletion}"
+                                 value="Perform Online Deletion" />
+                                  
+              </li>                                 
+          </f:subview>
+          <f:subview id="collectionDescriptionView" 
+                     rendered="#{securityBean.hasCollectionDescRole}">
+           
+              <li>
+                  <h:commandLink id="collectionDescriptionMenuItem"
+                                 action="editCollectionDescriptions"
+                                 value="Edit Collection Desc" />
+                                
+              </li>
+          </f:subview>   
+          
+    
+    </ul>
+    </td>
+    </f:subview>
+    
+    
+    
+    
+    
+    
+        
+     <td>
+            <img src="images/mainMenuSeparator.gif" 
+                 width="1" 
+                 height="16"
+                 alt="" />
+      </td>    
     
 
     
@@ -152,8 +383,7 @@ L-->
       <a class="mainMenuLink" 
          style="color:#fff" 
          onclick="window.open('http://www.cancerimagingarchive.net/support.html', 'new' ,'screenX=0,screenY=0,status=yes,toolbar=no,menubar=no,location=no,width=1200,height=700,scrollbars=yes,resizable=yes')">
-           <!-- <h:outputText value="#{msg.menu_help}"/> -->
-           <h:outputText value="Support"/>
+           <h:outputText value="#{msg.menu_help}"/>
       </a>
     </td>
     <!-- link 5 ends -->
@@ -191,7 +421,7 @@ L-->
       <td height="10"
           class="mainMenuText">
  
-        <h:outputText value="#{msg.loggedInAs} #{securityBean.userNameForUI}"  />
+        <h:outputText value="#{securityBean.userNameForUI}"  />
   
       </td>
       <!-- link  ends -->

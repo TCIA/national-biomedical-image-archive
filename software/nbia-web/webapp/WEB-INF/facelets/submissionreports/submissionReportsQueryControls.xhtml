@@ -16,9 +16,9 @@ L-->
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ncia="http://imaging.nci.nih.gov/ncia">
                 
-<ui:param name="helpId" value="6+-+NBIA+Administration#id-6-NBIAAdministration-ViewingSubmissionReports"/>
+<ui:param name="helpId" value="-viewsubmissionreport"/>
   
-  <table>
+  <table align="center">
 				<tr>
 					<td>
 						<div class="submissionReportTitleContainer">
@@ -42,10 +42,10 @@ L-->
     <ice:form id="submissionReportCriteriaForm" 
               rendered="#{not empty submissionReportsBean.authorizedProjectsSitesSelectItems}">
      
-      <table class="topBorderOnly submissionReportControlsTable" 
+      <table width="80%"
              cellpadding="3" 
              cellspacing="0" 
-             summary="criteria section">
+             summary="criteria section" align="center">
         <tr>
           <td colspan="3" class="submissionReportFormTitle">           
             #{msg.search_criteria}
@@ -53,7 +53,7 @@ L-->
         </tr>  
         <tr>
           <td width="24%" class="formLabel">
-            #{msg.collection_site}
+            <ice:outputLabel for="collectionSiteMenu" value="#{msg.collection_site}" />
           </td>
           <td colspan="2" class="formField">
             <ice:selectOneMenu id="collectionSiteMenu"                        
@@ -102,15 +102,15 @@ L-->
         </tr>             
         <tr>
           <td colspan="3" class="formLabel" style="text-align:center">
-            <ice:commandButton id="accrualReportSubmit"
+            <ice:commandButton id="accrualReportSubmit" alt="Accrual Report"
                                action="#{accrualReportSubmissionBean.submit}" 
                                image="/images/accrualreport.png"
                                style="margin-right: 15px"/>
-            <ice:commandButton id="imageReportSubmit"
+            <ice:commandButton id="imageReportSubmit"  alt="Image Report"
                                action="#{imageSubmissionReportBean.submit}" 
                                image="/images/imgreport.png"
                                style="margin-right: 15px"/>                                       
-            <ice:commandButton id="annotationReportSubmit"
+            <ice:commandButton id="annotationReportSubmit" alt="Annotation Report"
                                action="#{annotationSubmissionReportBean.submit}" 
                                image="/images/annoreport.png"/>                                                                    
           </td>

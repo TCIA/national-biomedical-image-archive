@@ -77,6 +77,12 @@ L-->
   </navigation-rule> 
     <navigation-rule>
     <navigation-case>
+      <from-outcome>freeTextSearch</from-outcome>
+      <to-view-id>/freeTextSearch.jsf</to-view-id>
+    </navigation-case>
+  </navigation-rule> 
+    <navigation-rule>
+    <navigation-case>
       <from-outcome>onlineDeletion</from-outcome>
       <to-view-id>/onlineDeletion.jsf</to-view-id>
     </navigation-case>
@@ -240,6 +246,13 @@ L-->
     <navigation-case>
       <from-outcome>searchCustomSeriesList</from-outcome>
       <to-view-id>/searchCustomList.jsf</to-view-id>
+      <redirect /> 
+    </navigation-case>
+  </navigation-rule>
+    <navigation-rule>
+    <navigation-case>
+    <from-outcome>manageCustomList</from-outcome>
+      <to-view-id>/manageCustomList.jsf</to-view-id>
       <redirect /> 
     </navigation-case>
   </navigation-rule>
@@ -623,8 +636,12 @@ L-->
     <managed-bean-scope>session</managed-bean-scope>
   </managed-bean>
   
-
-    
+  <managed-bean>
+      <description>Custom Description File Access Bean</description>
+      <managed-bean-name>fileAccessBean</managed-bean-name>
+      <managed-bean-class>gov.nih.nci.nbia.beans.customdescfile.FileAccessBean</managed-bean-class>
+      <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>  
   
   <render-kit>
     <renderer>

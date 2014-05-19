@@ -42,6 +42,8 @@ function checkAllInContainingTable(containedCheckbox) {
             inputElements[z].checked = containedCheckbox.checked;
         }
     }
+
+
 }
 
 function findContainingTable(element) {
@@ -57,6 +59,35 @@ function findContainingTable(element) {
     return null;
 }
 
+function resetBooleanCheckbox(){
+	
+	document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked = false;
+	//document.getElementById("checkAllBox").checked = false;
+	//document.getElementById('checkAllBox').reset();
+		
+}
+
+function toggleBooleanCheckAll(){
+
+	if(document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked){
+		document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked = true;
+	}
+		else{
+			document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked = true;
+	}
+}
+
+
+function toggleBooleanUnCheckAll(){
+
+	if(!document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked){
+		document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked = false;
+	}
+		else{
+			document.getElementById('MAINbody:qcToolForm:data:checkAllBox').checked = false;
+	}
+}
+
 function checkUncheckAll(theElement) {
 	//documentation for this script at http://www.shawnolson.net/a/693/
     var theForm = theElement.form, z = 0;
@@ -66,6 +97,7 @@ function checkUncheckAll(theElement) {
         }
         z++;
     }
+   // document.getElementById('checkAllBox').checked = !document.getElementById('checkAllBox').checked;
 }
 
 // Check all of the series for a given study
@@ -107,14 +139,27 @@ function selectRadio() {
 
 
 function doDicomPopup() {
-	var popup = window.open('/ncia/showDicom.jsf', 
-	                        "dicom_window", 
-	                        "height=800,width=600,scrollbars=yes,resizable=yes");
+	var popup = window.open('/ncia/showDicom.jsf',
+			    "dicom_window",
+			    "height=800,width=700,scrollbars=yes,resizable=yes");
+	popup.focus();
+}
+
+function doDicomTagPopup(seriesId) {
+	var popup = window.open('/ncia/showDicom.jsf?seriesId='+seriesId, 
+			    "dicom_window",
+			    "height=800,width=700,scrollbars=yes,resizable=yes");
+	popup.focus();
+}
+function doViewSeriesPopup(seriesId,location,url) {
+	var popup = window.open('/ncia/viewSeriesPopup.jsf?seriesId='+seriesId+'&location='+location +'&url='+url, 
+                            "view_series", 
+                            "height=800,width=600,scrollbars=yes,resizable=yes");
     popup.focus();
 }
 
-function doViewSeriesPopup(seriesId,location,url) {
-	var popup = window.open('/ncia/viewSeriesPopup.jsf?seriesId='+seriesId+'&location='+location +'&url='+url, 
+function doViewThumbnailPopup(seriesId) {
+	var popup = window.open('/ncia/viewThumbnailsPopup.jsf?seriesId='+seriesId, 
                             "view_series", 
                             "height=800,width=600,scrollbars=yes,resizable=yes");
     popup.focus();
@@ -205,7 +250,7 @@ function countUserSelection(form)
     for (var i = 0; i < studyTableCheckboxes.length; i++) {
   
         //example: MAINbody:dataForm:studyTable:0:seriesTable:1:seriesSelectionCheckbox
-        if (studyTableCheckboxes[i].id.match(/.*seriesSelectionCheckbox$/)) {                  
+        if (studyTableCheckboxes[i].id.match(/.*seriesSelectionCheckbox$/)) {    
 	      if( studyTableCheckboxes[i].checked) { 
 	          count=count + 1;
           }
@@ -213,7 +258,7 @@ function countUserSelection(form)
 	}
     
     if(count == 0 ){
-    	alert("Please select a series for visualization.");
+    	alert("Please add series to basket for visualization.");
     	return false;
     }
     else {
@@ -221,6 +266,26 @@ function countUserSelection(form)
        return true; 
     }
 }
+
+
+function slctVis(element) {
+	var eleName = element.name;
+	var checkBoxNamePrefix= eleName.substring(0,eleName.lastIndexOf(":"));
+	var studyTable = document.getElementById("MAINbody:dataForm:studyTable");
+	var checkBoxName = checkBoxNamePrefix+":seriesSelectionCheckbox";
+	var studyTableCheckboxes = studyTable.getElementsByTagName("input");     
+	    for (var i = 0; i < studyTableCheckboxes.length; i++) {
+	        if (studyTableCheckboxes[i].id == checkBoxName) {
+		   studyTableCheckboxes[i].checked = true;
+		   alert(studyTableCheckboxes[i].checked);
+		   break;
+	        }
+	}
+	
+	return true;
+
+}
+
 
 function countDataBasketSelection(form)
 {
@@ -242,3 +307,17 @@ function countDataBasketSelection(form)
     }
 }
 /************************* END CEDARA RELATED JAVASCRIPT *****************************/
+function selectAllInContainingTable(containerTableName) {
+    var containerTable = document.getElementById(containerTableName);
+    if(containerTable==null) {
+        return;
+    }
+    var inputElements = containerTable.getElementsByTagName('input');
+    for(var z = 0; z<inputElements.length; z++) {
+        if (inputElements[z].type == "checkbox") {
+            inputElements[z].checked = "yes";
+        }
+    }
+
+
+}

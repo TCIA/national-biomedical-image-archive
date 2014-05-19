@@ -23,10 +23,14 @@ import gov.nih.nci.ncia.criteria.NodeCriteria;
 import gov.nih.nci.ncia.criteria.NumFrameOptionCriteria;
 import gov.nih.nci.ncia.criteria.RangeData;
 import gov.nih.nci.nbia.beans.BeanManager;
+import gov.nih.nci.nbia.beans.DynamicSearchBean;
+import gov.nih.nci.nbia.beans.DynamicSearchCriteriaBean;
 import gov.nih.nci.nbia.beans.searchform.aim.AimSearchWorkflowBean;
 import gov.nih.nci.nbia.beans.searchresults.SearchResultBean;
 import gov.nih.nci.nbia.beans.security.SecurityBean;
+import gov.nih.nci.nbia.customserieslist.FileGenerator;
 import gov.nih.nci.nbia.dto.ModalityDescDTO;
+import gov.nih.nci.nbia.dynamicsearch.DynamicSearchCriteria;
 import gov.nih.nci.nbia.lookup.LookupManager;
 import gov.nih.nci.nbia.lookup.LookupManagerFactory;
 import gov.nih.nci.nbia.modalitydescription.ModalityDescProcessor;
@@ -59,14 +63,18 @@ import java.util.HashMap;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-
+import javax.faces.event.PhaseId;
 import javax.faces.event.ValueChangeEvent;
 
 import org.apache.log4j.Logger;
+
+import com.icesoft.faces.context.ByteArrayResource;
+import com.icesoft.faces.context.Resource;
 
 /**
  * This is the Session scope bean that provides the search functionality on the
@@ -606,6 +614,8 @@ public class SearchWorkflowBean {
         if (!buildQuery()) {
             // If there is a validation error, stay on the
             // same page
+        	SearchResultBean srb = BeanManager.getSearchResultBean();
+        	srb.setPatientResults(null);        	
             return null;
         }
         try {
@@ -620,7 +630,7 @@ public class SearchWorkflowBean {
             e.printStackTrace();
         }
 
-        return "submitSearch";
+        return "search";
     }
 
 
@@ -734,7 +744,7 @@ public class SearchWorkflowBean {
     	dynamicSearch = false;
         advanced = false;
         usSearch = false;
-
+        freeTextSearch = false;
         return newSearch();
     }
 
@@ -816,7 +826,10 @@ public class SearchWorkflowBean {
         {
         	return DYNAMIC_SEARCH;
         }
-
+        if (freeTextSearch)
+        {
+        	return FREE_TEXT_SEARCH;
+        }
         if (!showThickness) {
             defaultSliceThickness();
         }
@@ -985,9 +998,23 @@ public class SearchWorkflowBean {
 	public String newDynamicSearch()
 	{
 		dynamicSearch = true;
+		freeTextSearch = false;
+		SearchResultBean srb = BeanManager.getSearchResultBean();
+		srb.setPatientResults(null);
+		DynamicSearchBean dySearchBean = BeanManager.getDynamicSearchBean();
+		dySearchBean.resetAction();
 		return DYNAMIC_SEARCH;
 	}
-
+	public String newFreeTextSearch()
+	{
+		freeTextSearch = true;
+		dynamicSearch = false;
+		SearchResultBean srb = BeanManager.getSearchResultBean();
+		srb.setPatientResults(null);
+		DynamicSearchBean dySarchBean = BeanManager.getDynamicSearchBean();
+		dySarchBean.setTextValue("");
+		return FREE_TEXT_SEARCH;
+	}
 	public boolean isDynamicSearch() {
 		return dynamicSearch;
 	}
@@ -995,7 +1022,9 @@ public class SearchWorkflowBean {
 	public void setDynamicSearch(boolean dynamicSearch) {
 		this.dynamicSearch = dynamicSearch;
 	}
-
+	public void setFreeTextSearch(boolean freeTextSearch) {
+		this.freeTextSearch = freeTextSearch;
+	}
 	public RangeValidator getRangeValidator() {
 		return new RangeValidator();
 	}
@@ -1088,6 +1117,7 @@ public class SearchWorkflowBean {
     private boolean usSearch = false;
 
     private boolean dynamicSearch = false;
+    private boolean freeTextSearch = false;
 
     /**
      * Holds the values for manufacturer, model and software version in the tree
@@ -1144,6 +1174,7 @@ public class SearchWorkflowBean {
 
     private static final String SEARCH = "search";
     private static final String DYNAMIC_SEARCH = "dynamicSearch";
+    private static final String FREE_TEXT_SEARCH = "freeTextSearch";
     private boolean fromSavedQuery= false;
 
     /**
@@ -1189,7 +1220,7 @@ public class SearchWorkflowBean {
         patientInput = "";
 
         setDefaultKilovoltValues();
-        if(resultPerPageOption == null){
+        if(resultPerPageOption == null || StringUtil.isEmpty(resultPerPageOption)){
         	resultPerPageOption = "10";
         }
         //and if its not null??? then what??? leave it????
@@ -1234,6 +1265,8 @@ public class SearchWorkflowBean {
         unselectAllAnatomicalSites();
 
         this.aimSearchWorkflowBean.setDefaultValues();
+        SearchResultBean srb = BeanManager.getSearchResultBean();
+    	srb.setPatientResults(null);   
     }
 
     private void setDefaultKilovoltValues() {
@@ -1305,7 +1338,9 @@ public class SearchWorkflowBean {
             query.setQueryName(oldQuery.getQueryName());
             query.setSavedQueryId(oldQuery.getSavedQueryId());
         }
-
+        if(query.getCriteriaList().isEmpty()) {
+        	return false;
+        }
         return true;
     }
 
@@ -1520,7 +1555,13 @@ public class SearchWorkflowBean {
     }
 
     public void modalityChangeListener(ValueChangeEvent event) {
+    	if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
+    		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+    		event.queue();
+            return;
+        }
 		for (SelectItem selectItem : modalityItems) {
+			System.out.println("modality changed:" + selectItem.getLabel() + " "+ selectItem.getValue());
 			if (selectItem.getLabel().equals("US")) {
 				if (selectItem.getValue().equals(Boolean.TRUE)) {
 					System.out.println("modality changed:"
@@ -1532,6 +1573,12 @@ public class SearchWorkflowBean {
 			        unselectAllUsMultiModalityItems();
 				}
 			}
+		}
+		try {
+			submitSearch();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -1558,5 +1605,23 @@ public class SearchWorkflowBean {
     		return false;
     	}
     }
+    
+   public void resultPerPageOptionChangeListener(ValueChangeEvent event) {
+	   if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
+   		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+   		event.queue();
+           return;
+       }
+	    String resultPerPageOptionNewValue = (String)event.getNewValue();
+		System.out.println("resultPerPageOption new value" + resultPerPageOptionNewValue);
+		this.resultPerPageOption = resultPerPageOptionNewValue;
+		try {
+			submitSearch();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
+   }
+  
+  
 }

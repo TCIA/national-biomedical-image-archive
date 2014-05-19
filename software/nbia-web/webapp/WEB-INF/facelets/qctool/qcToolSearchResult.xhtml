@@ -46,14 +46,15 @@ L-->
 					rendered="#{not empty qcToolSearchBean.qsrDTOList}"
 					binding="#{qcToolSearchBean.dataTable}">
 
-					<ice:column>
-						<f:facet name="header">
-							<input name="checkAllBox" type="checkbox"
-								onclick="checkAllInContainingTable(this);" />
-						</f:facet>
-						<ice:selectBooleanCheckbox id="SlctRec" partialSubmit="false"
-							value="#{res.selected}" />
-					</ice:column>
+					 <ice:column>
+                                <f:facet name="header">
+                                    <!-- <input name="checkAllBox" type="checkbox"
+                                        onclick="checkAllInContainingTable(this);" /> -->
+                                        <h:selectBooleanCheckbox id="checkAllBox" name="checkAllBox"  onclick="checkAllInContainingTable(this);" />
+                                </f:facet>
+                                <ice:selectBooleanCheckbox id="SlctRec" partialSubmit="false" title="Select"
+                                    value="#{res.selected}" />
+                    </ice:column>
 
 					<ice:column>
 						<f:facet name="header">
@@ -133,7 +134,7 @@ L-->
 							<ice:outputText value="Viewer" />
 						</f:facet>
 						<ice:commandLink id="viewerLnk" value="View"
-							onclick="window.open('qcViewSeries.jsf?seriesId=#{res.series}', 'slideshow', 'resizable=yes,scrollbars=yes,width=1210,height=1000');return false;">
+							onclick="window.open('qcViewSeries.jsf?seriesId=#{res.series}', 'slideshow', 'resizable=yes,scrollbars=yes,width=1350,height=1000');return false;">
 						</ice:commandLink>
 					</ice:column>
 				</ice:dataTable>
@@ -175,7 +176,7 @@ L-->
 						<f:subview id="qcToolAdminView"
 							rendered="#{not qcToolBean.superRole}">
 							<ice:panelGroup styleClass="selectionRadioGroup">
-								<ice:outputLabel for="slctQcStatus" value="New Status"
+								<ice:outputLabel for="slctQcStatusUpdate" value="New Status"
 									style="line-height:200%" />
 								<br />
 								<ice:selectOneRadio id="slctQcStatusUpdate"
@@ -186,7 +187,7 @@ L-->
 								</ice:selectOneRadio>
 							</ice:panelGroup>
 						</f:subview>
-
+						<ice:outputLabel for="chngCmt"  value="comments" style="display:none"/> 
 						<ice:inputTextarea id="chngCmt"
 							value="#{qcToolUpdateBean.comments}" cols="100" rows="2"
 							partialSubmit="false" style="overflow: auto;">
@@ -197,7 +198,9 @@ L-->
 						</f:subview>
 						<ice:commandButton id="UpdateBtn"
 							value="#{qcToolBean.buttonLabel}"
-							action="#{qcToolUpdateBean.update}" />
+							onclick="resetBooleanCheckbox();" 
+							action="#{qcToolUpdateBean.update}"/>
+							
 					</ice:panelGrid>
 				</ice:panelGroup>
 			</ice:panelCollapsible>
@@ -215,25 +218,27 @@ L-->
 			</ice:panelCollapsible>
 
 		</ice:panelGroup>
-		<ice:panelPopup id="resultPagePnlPop" draggable="true" modal="true"
-			styleClass="corePopup"
-			visible="#{qcToolUpdateBean.searchPgPopupRendered}" autoCentre="true">
+		<ice:panelPopup id="resultPagePnlPop" resizable="false"
+			draggable="false" modal="true"
+			styleClass="corePopup" 
+			visible="#{qcToolUpdateBean.searchPgPopupRendered}" >
 			<f:facet name="header">
 				<ice:panelGroup styleClass="popupHeaderWrapper">
 					<ice:outputText value="Alert" styleClass="popupHeaderText" />
 
 					<ice:commandButton id="modalPnlCloseBtn" type="button"
-						image="/images/cancelIcon.gif" action="#{qcToolUpdateBean.cancel}"
+						image="/images/cancel.png" action="#{qcToolUpdateBean.cancel}"
 						styleClass="popupHeaderImage" title="Close Popup" alt="Cancel" />
 				</ice:panelGroup>
 			</f:facet>
 			<f:facet name="body">
 				<ice:panelGroup styleClass="popupBody">
 					<ice:outputText value="#{msg.qcTool_alertForSharedList}" />
-
+					<div style="height: 150px; overflow: auto;">
 					<ice:dataTable id="userName" var="uname" width="100%"
-						scrollable="true" scrollHeight="100px"
-						columnWidths="125px,300px,125px"
+						scrollHeight="100px"
+						style="word-break: break-all"
+						columnWidths="100px,410px,90px"
 						value="#{qcToolUpdateBean.userNameList}"
 						rendered="#{not empty qcToolUpdateBean.userNameList}">
 						<ice:column>
@@ -255,6 +260,7 @@ L-->
 							<ice:outputText value="#{uname.userName}" />
 						</ice:column>
 					</ice:dataTable>
+					</div>
 					<br />
 					<div align="right">
 						<ice:commandButton id="modalPnlContinueButton" type="submit"

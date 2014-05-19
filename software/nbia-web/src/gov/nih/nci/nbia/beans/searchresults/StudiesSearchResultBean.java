@@ -15,13 +15,16 @@ import gov.nih.nci.nbia.search.DrillDown;
 import gov.nih.nci.nbia.search.DrillDownFactory;
 import gov.nih.nci.nbia.util.MessageUtil;
 import gov.nih.nci.nbia.util.NCIAConfig;
+import gov.nih.nci.nbia.util.NCIAConstants;
 import gov.nih.nci.ncia.search.PatientSearchResult;
 import gov.nih.nci.ncia.search.SeriesSearchResult;
 import gov.nih.nci.ncia.search.StudySearchResult;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.component.UIData;
 
@@ -56,6 +59,19 @@ public class StudiesSearchResultBean {
 	
 	
 	public List<StudyResultWrapper> getStudyResults() {
+		String installationSite = NCIAConfig.getInstallationSite();
+		if (installationSite.equalsIgnoreCase(NCIAConstants.INSTALLATION_SITE)) {
+			//check if in basket
+			BasketBean dataBasket = BeanManager.getBasketBean();
+			Map<String, Boolean> basketMap = dataBasket.getInBasketMap();
+			for(StudyResultWrapper study : studyResults) {
+				for(SeriesResultWrapper seriesWrapper : study.getSeriesResults()) {
+					if(basketMap.containsKey(seriesWrapper.getBasketKey())) {
+						seriesWrapper.setChecked(true);
+					}
+				}
+			}
+		}
 		return studyResults;
 	}
 
@@ -72,10 +88,24 @@ public class StudiesSearchResultBean {
 	 * Adds all of the selected series to the basket.
 	 */
 	public String addSeriesToBasket() throws Exception {
-		BasketBean dataBasket = BeanManager.getBasketBean();
-		
-		List<SeriesSearchResult> selectedSeriesList = findSelectedSeries();
+		SeriesSearchResult seriesSearchResult = getSelectedSeries(toAdd);
+		setSeriesCheckBox(true);
+		addToBasket(Arrays.asList(seriesSearchResult));
+		return null;
+	}
 
+	private void setSeriesCheckBox(boolean value) {
+		for(StudyResultWrapper studywraper : studyResults) {
+			for(SeriesResultWrapper seriesWrapper : studywraper.getSeriesResults()) {
+				if(seriesWrapper.getSeries().getId() == toAdd) {
+					seriesWrapper.setChecked(value);
+				}
+			}
+		}
+	}
+	
+	private String addToBasket(List<SeriesSearchResult> selectedSeriesList) throws Exception {
+		BasketBean dataBasket = BeanManager.getBasketBean();
 		AnonymousLoginBean anonymousLoginBean = BeanManager.getAnonymousLoginBean();
 		// Anonymous login: need to get the size from current data basket and calculate the selected ones.
 		// The total should not >= 3GB. Otherwise, show the warning message.
@@ -91,18 +121,51 @@ public class StudiesSearchResultBean {
 				return null;
 			}
     	}
-
-		uncheckAllSeries();
-
+		//uncheckAllSeries();
 		dataBasket.getBasket().addSeries(selectedSeriesList);
-
-
 		return null;
 	}
 	
+	private int toAdd;
+
+	public int getToAdd() {
+		return toAdd;
+	}
 	
+	public void setToAdd(int toAdd) {
+		this.toAdd = toAdd;
+	}
+
+	public String removeSeriesFromBasket() {
+		try {
+			SeriesSearchResult s = getSelectedSeries(toAdd);
+			String toDelete = s.getId() + "||" + s.associatedLocation().getURL();
+			BeanManager.getBasketBean().getBasket().removeSelectedSeries(toDelete);
+			setSeriesCheckBox(false);		
+		} catch(Exception ex) {
+			MessageUtil.addErrorMessage("MAINbody:dataForm:tableOfPatientResultTables",
+                    "drillDownRequestFailure",
+                    null );
+		}		
+		return null;
+	}
 
 
+	private SeriesSearchResult getSelectedSeries(int seriesId) {
+
+		for(StudyResultWrapper studywraper : studyResults) {
+			for(SeriesResultWrapper seriesWrapper : studywraper.getSeriesResults()) {
+				if(seriesWrapper.getSeries().getId() == seriesId) {
+					SeriesSearchResult series = seriesWrapper.getSeries();
+					series.setStudyDate(studywraper.getDateString());
+					series.setStudyDescription(studywraper.getStudy().getDescription());
+					return series;
+				}
+			}
+		}	
+		return null;
+	}
+	
 	/**
 	 * Checks all of the series in the list.
 	 */
@@ -242,5 +305,19 @@ public class StudiesSearchResultBean {
 			}
 		}	
 		return selectedSeriesList;
+	}
+	public String addAllSeriesToBasket() throws Exception {
+		List<SeriesSearchResult> seriesList = new ArrayList<SeriesSearchResult>();
+		for(StudyResultWrapper study : studyResults) {
+			for(SeriesResultWrapper seriesWrapper : study.getSeriesResults()) {
+				SeriesSearchResult series = seriesWrapper.getSeries();
+				series.setStudyDate(study.getDateString());
+				series.setStudyDescription(study.getStudy().getDescription());
+				seriesList.add(series);
+				seriesWrapper.setChecked(true);
+			}
+		}		
+		addToBasket(seriesList);
+		return null;
 	}
 }

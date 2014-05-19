@@ -93,6 +93,7 @@ $HeadURL$
   <property name="nbia-services-grid.base.dir" value="${software.dir}/nbia-services-grid"/>
   <property name="nbia-domain.base.dir" value="${software.dir}/nbia-domain"/>
   <property name="nbia-web.base.dir" value="${software.dir}/nbia-web"/>
+  <property name="nbia-api.base.dir" value="${software.dir}/nbia-api" />
   <property name="nbia-download-manager.base.dir" value="${software.dir}/nbia-download-manager"/>
   <property name="nbia-download.base.dir" value="${software.dir}/nbia-download"/>
   <property name="nbia-remote-search.base.dir" value="${software.dir}/nbia-remote-search" />
@@ -108,6 +109,7 @@ $HeadURL$
   <property name="nbia-services-grid.build.target" value="run"/>
   <property name="nbia-domain.build.target" value="all"/>
   <property name="nbia-web.build.target" value="run"/>
+  <property name="nbia-api.build.target" value="run" />
   <property name="nbia-download-manager.build.target" value="run"/>
   <property name="nbia-download.build.target" value="run"/>
   <!-- Default install time targets passed by deploy targets to the installer, can be overridden by being set on the command line if different target is desitred.  -->
@@ -143,6 +145,9 @@ $HeadURL$
   <property name="nbia-ctp.dist.dir" value="${dist.exploded.dir}/${nbia-ctp.dist.relative.dir}"/>
   <property name="nbia-web.dist.dir" value="${dist.exploded.dir}/${nbia-web.dist.relative.dir}"/>
   <property name="tools.dist.dir" value="${dist.exploded.dir}/${tools.dist.relative.dir}" />
+  <property name="solr.dist.dir" value="${dist.exploded.dir}/${solr.dist.relative.dir}" />
+
+  
 
   <!-- locally used paths, not needed by install -->
   <property name="jboss.dest.file" value="${download.dir}/${jboss.binaries.file}"/>
@@ -284,22 +289,22 @@ $HeadURL$
   </target>
 
   <target name="compute-tag-properties">
-    <if>
-      <and>
-        <isset property="nbia_prod_build_tag" />
-        <not> <equals arg1="${nbia_prod_build_tag}" arg2="master"/></not> 
-      </and>              
-      <then>
-          <property name="nbia_prod_build_tag.final" value="${nbia_prod_build_tag}"/>
-          <echo message="!!!  nbia_prod_build_tag =${nbia_prod_build_tag.final}"/>
-      </then>
-      <else>
-         <property name="nbia_prod_build_tag.final" value="dev-snapshot ${DSTAMP} ${TSTAMP}"/>
-         <echo message="!!!  nbia_prod_build_tag =${nbia_prod_build_tag.final}"/>
-     </else>
-     </if>    
-     <echo message=" !!! final  nbia_prod_build_tag =${nbia_prod_build_tag.final}"/>
-
+  <!-- rewrite the code since github does not support $headURL$ so whenever to display tag in home page build with -Dnbia_prod_build_tag=value to diplay on home page -->
+      <if>
+  	<and>
+  	<isset property="nbia_prod_build_tag" />
+            <not> <equals arg1="${nbia_prod_build_tag}" arg2="master"/></not> 
+         </and>	      
+         <then>
+             <property name="nbia_prod_build_tag.final" value="${nbia_prod_build_tag}"/>
+             <echo message="!!!  nbia_prod_build_tag =${nbia_prod_build_tag.final}"/>
+        </then>
+    	<else>
+    	    <property name="nbia_prod_build_tag.final" value="dev-snapshot ${DSTAMP} ${TSTAMP}"/>
+    	   <echo message="!!!  nbia_prod_build_tag =${nbia_prod_build_tag.final}"/>
+    	</else>
+      </if>    
+      <echo message=" !!! final  nbia_prod_build_tag =${nbia_prod_build_tag.final}"/>
   </target>
 
   <target name="clean">
@@ -388,6 +393,7 @@ $HeadURL$
     compute-tag-properties,
     keygen,
     build:nbia-web,
+    build:nbia-api,
     build:nbia-ctp,
     build:ncia-core-grid,
     build:nbia-grid,
@@ -519,6 +525,7 @@ $HeadURL$
       <property name="jar-signing.execution.time" value="${jar-signing.execution.time}"/>
       <!-- Need absolution location, relative path would fail in sub-project since file would not exist -->
       <property name="jar-signing.keystore.abs-location" value="${jar-signing.keystore.abs-location}"/>
+      <property name="nbia.wiki.context.sensitive.help.url" value="${nbia.wiki.context.sensitive.help.url}" />
     </ant>
 
   </target>
@@ -606,6 +613,8 @@ $HeadURL$
       <property name="project.name" value="${project.name}"/>
       <property name="nbia.version" value="${nbia.version}"/>
       <property name="nbia_prod_build_tag.final" value="${nbia_prod_build_tag.final}"/>
+      <property name="nbia.wiki.context.sensitive.help.url" value="${nbia.wiki.context.sensitive.help.url}" />
+      <property name="nbia.wiki.user.guide.url" value="${nbia.wiki.user.guide.url}" />
     </ant>
 
   </target>
@@ -842,15 +851,23 @@ $HeadURL$
           todir="${dist.dir}"/>
   </target>
 
-  <!-- Produces all distributions: installer, upgrader and source -->
+  <!-- Produces all distributions: installer, and source -->
+  <!-- Test target for signing
   <target name="dist" description="Makes all distributions: installer, upgrader and source"
     depends="
     build:all,
-    dist:installer,
-    dist:upgrader,
+
     dist:src,
-    dist:gui-installer,
-    dist:ncia-core-grid-client"/>
+    dist:ncia-core-grid-client,
+    dist:solr"/--> 
+    
+    <target name="dist" description="Makes all distributions: installer, upgrader and source" 
+        depends="
+        build:all,
+        dist:installer,
+        dist:src,
+        dist:ncia-core-grid-client,
+    dist:solr"/>
 
   <target name="dist:src">
     <!-- Add tasks here to zip up src into a distribution, may require some additoinal properties for distribution name" -->
@@ -921,7 +938,7 @@ $HeadURL$
     <get src="${ws-core.src.url}"
       dest="${ws-core.dest.file}"/>
     <get src="${ws-core.src.url}.md5"
-      dest="${ws-core.dest.file}.md5"/>
+      dest="${ws-core.dest.file}.MD5"/>
     <checksum file="${ws-core.dest.file}" verifyProperty="ws-core.cksum.ok"/>
     <if>
       <equals arg1="${ws-core.cksum.ok}" arg2="true"/>
@@ -948,7 +965,7 @@ $HeadURL$
     <get src="${jboss.src.url}"
          dest="${jboss.dest.file}"/>
     <get src="${jboss.src.url}.md5"
-         dest="${jboss.dest.file}.md5"/>
+         dest="${jboss.dest.file}.MD5"/>
     <checksum file="${jboss.dest.file}" verifyProperty="jboss.cksum.ok"/>
     <if>
       <equals arg1="${jboss.cksum.ok}" arg2="true"/>
@@ -966,7 +983,7 @@ $HeadURL$
       <get src="${ncia-core-grid.jboss.src.url}"
            dest="${ncia-core-grid.jboss.dest.file}"/>
       <get src="${ncia-core-grid.jboss.src.url}.md5"
-           dest="${ncia-core-grid.jboss.dest.file}.md5"/>
+           dest="${ncia-core-grid.jboss.dest.file}.MD5"/>
       <checksum file="${ncia-core-grid.jboss.dest.file}" verifyProperty="jboss.cksum.ok"/>
       <if>
         <equals arg1="${jboss.cksum.ok}" arg2="true"/>
@@ -1044,7 +1061,7 @@ $HeadURL$
 
     <obfuscate-properties-file
       properties.file="${dist.exploded.dir}/install.properties"
-      required.property.list="application.base.path.linux,application.base.path.windows,database.system.user,database.system.password,database.server,database.port,database.name,database.user,database.password,mail.smtp.host,jboss.server.hostname,jar-signing.generate-selfsigned,jar-signing.keystore.alias,jar-signing.keystore.password,jar-signing.keystore.location,local.grid.uri"
+      required.property.list="application.base.path.linux,application.base.path.windows,database.system.user,database.system.password,database.server,database.port,database.name,database.user,database.password,mail.smtp.host,jboss.server.hostname,jar-signing.generate-selfsigned,jar-signing.keystore.alias,jar-signing.keystore.password,jar-signing.keystore.location,local.grid.uri,gov.nih.nci.ncia.encrypt.key"
       optional.property.list="ldap.url,ldap.basedn"
       />
     <replaceregexp file="${dist.exploded.dir}/install.properties" byline="true"
@@ -1746,4 +1763,19 @@ jboss.home,ctp.server.home,ctp.client.home,
    <target name="nbia:runUtility" description="run the utility to correct db" depends="build:nbia-ctp">	
 	 <java jar="${nbia-ctp.dist.dir}/nbiaDatabaseUpdator.jar" fork="true"/>
    </target>	
+
+  <target name="dist:solr">
+    <copy todir="${solr.dist.dir}">
+      <fileset dir="${common.dir}/resources/solr/">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+   </target>
+   
+   <target name="build:nbia-api" depends="init,
+   	                   build:nbia-domain,
+   		           build:nbia-dao">			
+   		<ant inheritAll="false" inheritRefs="false" antfile="${nbia.build.file}" target="${nbia-api.build.target}" dir="${nbia-api.base.dir}"/>
+   </target>
+
 </project>

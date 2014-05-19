@@ -14,6 +14,9 @@ table {
 }
 
 body {
+  background:-webkit-gradient(linear, left top, left bottom, from(#d6d6d4), to(#ffffff)) scroll 0 0 repeat-x ;
+  background:-moz-linear-gradient(center top , rgb(214, 214, 212), rgb(255, 255, 255)) repeat-x scroll 0% 0% transparent; 
+  background:-ms-filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#d6d6d4, endColorStr=#ffffff,GradientType=1);
   padding-right: 0px; 
   padding-left: 0px; 
   padding-bottom: 0px; 
@@ -23,20 +26,17 @@ body {
 
 a:link {
   color: #0000CC; 
-  white-space: nowrap; 
   text-decoration: underline;
   border:0px;
 }
 
 a:visited {
   color: #551a8b; 
-  white-space: nowrap; 
   text-decoration: underline
 }
 
 a:active {
   color: #0033CC; 
-  white-space: nowrap; 
   text-decoration: underline; 
   border:0px;
 }
@@ -64,9 +64,9 @@ p {
 
 
 /* ********************************* BEGIN MAIN LAYOUT RULES ***************************************/
-.hdrBG {
+/*.hdrBG {
   /* background-color: #a90101 */
-}
+}*/
 
 .subhdrBG {
   background-color: #475b82
@@ -104,6 +104,62 @@ p {
 .ftrTable {
   padding-top: 0.4em
 }
+table.hdrBG {
+  background:-webkit-gradient(linear, left top, left bottom, from(#fbfcfc), to(#d6d6d4));
+  background:-moz-linear-gradient(center top , rgb(251, 252, 252), rgb(214, 214, 212)) repeat-x scroll 0% 0% transparent; 
+  background:-ms-filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#fbfcfc, endColorStr=#d6d6d4,GradientType=0);
+  border-right: thin solid #798d93;
+  border-left: thin solid #798d93;
+}
+table.portal-footer {
+  margin-left: auto; 
+  margin-right: auto;
+}
+
+tr.portal-footer{
+  text-align: center; 
+  font-size: 79%; 
+}
+
+a.portal-footer {
+  text-decoration: none; 
+  color: #333333; 
+  border: none; 
+  line-height: 1.1em;
+}
+
+a.portal-footer:visited {
+  color: #333333;
+}
+
+a.portal-footer:hover {
+  text-decoration: underline;
+}
+
+#portal-footer { 
+  text-align: center; 
+  color: #333333; 
+  font-size: 79%; 
+  line-height: 3.2em;
+}
+
+#portal-footer a {
+  text-decoration: none; 
+  color: #333333; 
+  border: none;
+}
+
+#portal-footer a:visited {
+  color: #333333;
+}
+
+#portal-footer a:hover {
+  text-decoration: underline;
+}
+
+.footerLinks {
+  padding: .5em 0em 0em 0em;
+}
 
 td.mainMenu {
   border-top: #cccccc 1px solid; 
@@ -112,29 +168,108 @@ td.mainMenu {
   background-color: #706f5d;
 }
 
+td.mainMenuText {
+  padding-right: 1em; 
+  padding-left: 1em; 
+  font-weight: bold; 
+  font-size: 0.7em; 
+  color: #ffffff;
+  background-color: #706f5d;
+}
+
 td.mainMenuItem {
   padding-right: 1em; 
   padding-left: 1em; 
   font-weight: bold; 
-  font-size: 0.6em; 
-  background-color: #706f5d;
+  font-size: 0.82em; 
+  color: #ffffff;
+  background-color: #4C5D87;
 }
+
+td.mainMenuItem ul{
+  display: none;
+  margin: 0;
+  font-size: 1.0em;
+  text-align: left;
+  color: #ffffff; 
+}
+
+td.mainMenuItem:hover {
+  background-color: #d6d6d4;
+  color: #000000; 
+}
+
+
+td.mainMenuItem:hover ul  {
+  display: block;
+  position: absolute;
+  padding:0;
+  margin: auto;
+  margin-left: -1em;
+  
+  background-color: #4C5D87;
+}
+
+td.mainMenuItem li {
+  color: #FFFFFF; 
+  white-space: nowrap; 
+  list-style: none;
+  Padding-top: 6px;
+  Padding-right: 7px;
+  Padding-bottom: 5px;
+  Padding-left:  5px;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+td.mainMenuItem li a {
+  
+  color: #FFFFFF; 
+  text-decoration: none;
+	 
+}
+td.mainMenuItem li a:hover {
+  color: #000000; 
+  background-color: #d6d6d4;
+}
+
+td.mainMenuItem li:hover {
+  color: #000000; 
+  background-color: #d6d6d4;
+}
+
 
 td.mainMenuItemOver {
   padding-right: 1em; 
   padding-left: 1em; 
   font-weight: bold; 
-  font-size: 0.6em; 
-  background-color: #475b82
+  font-size: 0.8em; 
+  background-color: #d6d6d4
 }
 
-td.mainMenuText {
-  padding-right: 1em; 
-  padding-left: 1em; 
-  font-weight: bold; 
-  font-size: 0.6em; 
-  color: white;
+a.mainMenuLink:link {
+  color: #ffffff; 
+  white-space: nowrap; 
+  text-decoration: none;
+ 
 }
+
+a.mainMenuLink:visited {
+  color: #ffffff; 
+  white-space: nowrap; 
+  text-decoration: none
+}
+
+a.mainMenuLink:active {
+  color: #ffffff; 
+  white-space: nowrap; 
+  text-decoration: none
+}
+
+a.mainMenuLink:hover {
+  color: #ffffff
+  text-decoration: none
+}
+
 
 td.footerMenu {
   border-top: #cccccc 1px solid; 
@@ -182,7 +317,7 @@ td.subMenuPrimaryItems {
   font-size: 0.6em; 
   padding-bottom: 0.8em; 
   padding-top: 0.8em; 
-  background-color: #ffffff
+  background-color: #F8F8F8
 }
 
 td.subMenuSecondaryTitle {
@@ -191,8 +326,9 @@ td.subMenuSecondaryTitle {
   font-weight: bold; 
   font-size: 0.6em; 
   color: #ffffff; 
-  border-bottom: #cccccc 1px solid; 
-  background-color: #6e81a6
+  border-bottom: #cccccc 1px solid;
+  background-color: #F8F8F8;
+  text-decoration: underline
 }
 
 td.subMenuSecondaryTitleOver {
@@ -201,8 +337,9 @@ td.subMenuSecondaryTitleOver {
   font-weight: bold; 
   font-size: 0.6em; 
   color: #ffffff; 
-  border-bottom: #cccccc 1px solid; 
-  background-color: #475b82
+  border-bottom: #cccccc 1px solid;
+  background-color: #F8F8F8
+  
 }
 
 td.subMenuFill {
@@ -218,24 +355,36 @@ td.subMenuFill {
   margin-left: auto; 
   margin-right: auto;
   font-family: arial,helvetica,verdana,sans-serif;
+/*
+a.subMenuPrimary {
+  color: #FFFFFF; 
+  white-space: nowrap; 
+  text-decoration: underline;
+  Padding-top: 6px;
+  Padding-right: 7px;
+  Padding-bottom: 5px;
+  Padding-left:  5px;
+  border-bottom: 1px solid #EFEFEF;
 }
+
 
 a.subMenuPrimary:link {
   color: #706f5d; 
   white-space: nowrap; 
-  text-decoration: underline
+  text-decoration: none
+  
 }
 
 a.subMenuPrimary:visited {
   color: #706f5d; 
   white-space: nowrap; 
-  text-decoration: underline
+  text-decoration: none
 }
 
 a.subMenuPrimary:active {
   color: #706f5d; 
   white-space: nowrap; 
-  text-decoration: underline
+  text-decoration: none
 }
 
 a.subMenuPrimary:hover {
@@ -247,6 +396,16 @@ a.mainMenuLink:link {
   white-space: nowrap; 
   text-decoration: none
 }
+
+#subMenuPrimary {
+  Padding-top: 6px;
+  Padding-right: 7px;
+  Padding-bottom: 5px;
+  Padding-left:  5px;
+  border-bottom: 1px solid #EFEFEF;
+}
+
+*/
 
 a.mainMenuLink:visited {
   color: #ffffff; 
@@ -261,29 +420,29 @@ a.mainMenuLink:active {
 }
 
 a.mainMenuLink:hover {
-  color: #ffffff
+  color: #000000;
 }
 
 a.footerMenuLink:link {
-  color: #ffffff; 
+  color: #000000; 
   white-space: nowrap; 
   text-decoration: none
 }
 
 a.footerMenuLink:visited {
-  color: #ffffff; 
+  color: #000000; 
   white-space: nowrap; 
   text-decoration: none
 }
 
 a.footerMenuLink:active {
-  color: #ffffff; 
+  color: #000000; 
   white-space: nowrap; 
   text-decoration: none
 }
 
 a.footerMenuLink:hover {
-  color: #ffffff
+  color: #a90101
 }
 /* ********************************* END MAIN LAYOUT RULES ***************************************/
 
@@ -400,6 +559,58 @@ input.actionButton {
   font-family: arial,helvetica,verdana,sans-serif
 }
 
+.columnClasses1{
+  width: 4%;
+		
+}
+
+.columnClasses2{
+  width: 14%;
+}
+
+.columnClasses3{  
+  width: 10%;
+}
+
+.columnClasses4{
+  width: 8%;
+	
+}
+
+.columnClasses5{
+  width: 17%;
+	
+}
+
+.columnClasses6{
+  width: 8%;
+	
+}
+
+.columnClasses7{
+  width: 13%;
+	
+}
+
+.columnClasses8{
+  width: 7%;
+	
+}
+
+.columnClasses9{
+  width: 6%;
+	
+}
+
+.columnClasses10{
+  width: 7%;
+	
+}
+
+.columnClasses11{
+  width: 6%;
+	
+}
 
 .seriesDataCell {
   padding-left: 3px;
@@ -789,7 +1000,7 @@ table.promptbox {
 .corePopup {
     position: absolute;
     z-index: 1001;
-    width: 600px;
+    width: 630px;
     height: 300px;
     top: 60%;
     left: 40%;
@@ -831,6 +1042,26 @@ table.promptbox {
 }
 /* end */
 
+.button {
+     padding: 5px 7px;
+        background: #d6d6dd;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        border: solid 1px #2A4E77;
+        -webkit-transition-duration: 0.2s;
+        -moz-transition-duration: 0.2s;
+        transition-duration: 0.2s;
+        -webkit-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+    user-select:none;
+   }
+.button:hover {
+    background: #d6d6d4;
+    border: solid 1px #2A4E77;
+    text-decoration: none;
+}   
 /* FOOTER for TCIA */
 ul.footnav {
   text-align: center;

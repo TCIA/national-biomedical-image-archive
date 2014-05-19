@@ -17,11 +17,17 @@ import gov.nih.nci.nbia.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -74,6 +80,188 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
         return (Collection<String>)getHibernateTemplate().find(hql);
 	}
 
+	/**
+	 * Fetch set of Modality through project, ie. collection, and bodyPartExamined
+	 * This method is used for NBIA Rest API.
+	 * @param collection A label used to name a set of images collected for a specific trial or other reason.
+	 * Assigned during the process of curating the data. The info is kept under project column
+	 * @param bodyPart Body Part Examined
+	 */
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<String> getModalityValues(String collection, String bodyPart,List<SiteData> authorizedSites) throws DataAccessException
+	{
+
+		List<String> rs = null;
+		String hql = "select distinct(modality) from GeneralSeries s where visibility = '1'";
+		String order = " order by upper(modality)";
+		List<String> paramList = new ArrayList<String>();
+		int i = 0;
+		StringBuffer where = new StringBuffer();
+
+		if (collection != null) {
+			where.append(" and UPPER(s.project)=?");
+			paramList.add(collection.toUpperCase());
+			i++;
+		}
+		if (bodyPart != null) {
+			where.append(" and UPPER(s.bodyPartExamined)=?");
+			paramList.add(bodyPart.toUpperCase());
+			i++;
+		}
+		where.append(addSecurityGroup(authorizedSites));
+		if (i > 0) {
+			Object[] values = paramList.toArray(new Object[paramList.size()]);
+			rs = getHibernateTemplate().find(hql + where.toString() + order,
+					values);
+		} else {
+			rs  = getHibernateTemplate().find(hql +  where.toString() +order);
+		}
+
+        return rs;
+	}
+
+	/**
+	 * Fetch set of body part values through project, ie. collection, and modality
+	 * This method is used for NBIA Rest API.
+	 * @param collection A label used to name a set of images collected for a specific trial or other reason.
+	 * Assigned during the process of curating the data. The info is kept under project column
+	 * @param modality Body Part Examined
+	 */
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<String> getBodyPartValues(String collection, String modality,List<SiteData> authorizedSites) throws DataAccessException
+	{
+
+		List<String> rs = null;
+		String hql = "select distinct(bodyPartExamined) from GeneralSeries s where visibility = '1' ";
+		String order = " order by upper(bodyPartExamined)";
+		List<String> paramList = new ArrayList<String>();
+		int i = 0;
+		StringBuffer where = new StringBuffer();
+		if (collection != null) {
+			where.append(" and UPPER(s.project)=?");
+			paramList.add(collection.toUpperCase());
+			i++;
+		}
+		if (modality != null) {
+			where.append(" and UPPER(s.modality)=?");
+			paramList.add(modality.toUpperCase());
+			i++;
+		}
+
+		where.append(addSecurityGroup(authorizedSites));
+		if (i > 0) {
+			Object[] values = paramList.toArray(new Object[paramList.size()]);
+			rs = getHibernateTemplate().find(hql + where.toString() + order,
+					values);
+		} else {
+			rs  = getHibernateTemplate().find(hql  + where.toString() + order);
+		}
+
+        return rs;
+	}
+
+	/**
+	 * Fetch set of manufacturer names through project, ie. collection, bodyPart and modality
+	 * This method is used for NBIA Rest API.
+	 * @param collection A label used to name a set of images collected for a specific trial or other reason.
+	 * Assigned during the process of curating the data. The info is kept under project column
+	 * @param modality Modality
+	 * @param bodyPart Body Part Examined
+	 */
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<String> getManufacturerValues(String collection,
+			String modality, String bodyPart,List<SiteData> authorizedSites) throws DataAccessException {
+		StringBuffer where = new StringBuffer();
+		List<String> rs = null;
+		String hql = "select distinct(s.generalEquipment.manufacturer) from GeneralSeries s where s.visibility ='1'";
+		String order = " order by upper(s.generalEquipment.manufacturer)";
+		List<String> paramList = new ArrayList<String>();
+		int i = 0;
+
+		if (collection != null) {
+			where = where.append(" and UPPER(s.project)=?");
+			paramList.add(collection.toUpperCase());
+			++i;
+		}
+		if (modality != null) {
+			where = where.append(" and UPPER(s.modality)=?");
+			paramList.add(modality.toUpperCase());
+			++i;
+		}
+		if (bodyPart != null) {
+			where = where.append(" and UPPER(s.bodyPartExamined)=?");
+			paramList.add(bodyPart.toUpperCase());
+			++i;
+		}
+
+		where.append(addSecurityGroup(authorizedSites));
+
+
+		if (i > 0) {
+			Object[] values = paramList.toArray(new Object[paramList.size()]);
+			rs = getHibernateTemplate().find(hql + where.toString() + order,
+					values);
+		} else
+			rs = getHibernateTemplate().find(hql + where.toString() + order);
+
+		return rs;
+	}
+
+	private StringBuffer addSecurityGroup(List<SiteData> authorizedSites) {
+		StringBuffer where = new StringBuffer();
+		String authorisedProjectName = getProjectNames(authorizedSites);
+		String authorisedSiteName = getSiteNames(authorizedSites);
+		if(authorisedProjectName != null && authorisedSiteName != null) {
+			where = where.append(" and UPPER(s.project) in (").append(authorisedProjectName).append(")").append(" and UPPER(s.site) in (" + authorisedSiteName+")");
+		}
+		return where;
+	}
+
+	/**
+	 * Fetch set of  series objects filtered by project, ie. collection, patientId and studyInstanceUid
+	 * This method is used for NBIA Rest API.
+	 * @param collection A label used to name a set of images collected for a specific trial or other reason.
+	 * @param patientId Patient ID
+	 * @param seriesInstanceUid Series Instance UID
+	 */
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<Object[]> getSeries(String collection, String patientId, String studyInstanceUid,List<SiteData> authorizedSites) throws DataAccessException {
+		StringBuffer where = new StringBuffer();
+		List<Object[]> rs = null;
+		String hql = "select s.seriesInstanceUID, s.studyInstanceUID, s.modality, s.protocolName, s.seriesDate, s.seriesDesc, " +
+		"s.bodyPartExamined, s.seriesNumber, s.annotationsFlag, s.project, s.patientId, s.generalEquipment.manufacturer, " +
+		"s.generalEquipment.manufacturerModelName, s.generalEquipment.softwareVersions, s.imageCount"+
+		" from GeneralSeries s where s.visibility ='1'";
+
+		List<String> paramList = new ArrayList<String>();
+		int i = 0;
+
+		if (collection != null) {
+			where = where.append(" and UPPER(s.project)=?");
+			paramList.add(collection.toUpperCase());
+			++i;
+		}
+		if (patientId != null) {
+			where = where.append(" and UPPER(s.patientId)=?");
+			paramList.add(patientId.toUpperCase());
+			++i;
+		}
+		if (studyInstanceUid != null) {
+			where = where.append(" and UPPER(s.studyInstanceUID)=?");
+			paramList.add(studyInstanceUid.toUpperCase());
+			++i;
+		}
+		where.append(addSecurityGroup(authorizedSites));
+
+		if (i > 0) {
+			Object[] values = paramList.toArray(new Object[paramList.size()]);
+			rs = getHibernateTemplate().find(hql + where.toString(), values);
+		} else
+			rs = getHibernateTemplate().find(hql + where.toString());
+
+		return rs;
+	}
+
 	@Transactional(propagation=Propagation.REQUIRED)
 	public Collection<String> findDistinctModalitiesFromVisibleSeries() throws DataAccessException {
 		String hql =
@@ -99,7 +287,7 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 	 * This returns the series objects by their primary keys.  This method
 	 * does NOT look at authorization of any kind.
 	 */
-	@Transactional(propagation=Propagation.REQUIRED)	
+	@Transactional(propagation=Propagation.REQUIRED)
 	public List<SeriesDTO> findSeriesBySeriesPkId(Collection<Integer> seriesPkIds) throws DataAccessException {
         List<List<Integer>> chunks = Util.breakListIntoChunks(new ArrayList<Integer>(seriesPkIds),
                                                               CHUNK_SIZE);
@@ -110,7 +298,7 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
         String selectStmt = SQL_QUERY_SELECT;
         String fromStmt = SQL_QUERY_FROM;
         String whereStmt = "";
-        
+
         // Run the query
         long start = System.currentTimeMillis();
         for (List<Integer> chunk : chunks) {
@@ -195,7 +383,7 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 		if (studyInstanceUids == null || studyInstanceUids.size() <= 0){
 			return null;
 		}
-		
+
 		List<GeneralSeries> seriesList = getSeriesFromStudys(studyInstanceUids,
 				                                             authorizedSites,
 				                                             authroizedSeriesSecurityGroups);
@@ -225,8 +413,8 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 		seriesDTOList = convertHibernateObjectToSeriesDTO(seriesList);
 		return seriesDTOList;
 	}
-	
-	
+
+
 	@Transactional(propagation=Propagation.REQUIRED)
 	public SeriesDTO getGeneralSeriesByPKid(Integer seriesPkId) throws DataAccessException
 	{
@@ -247,16 +435,16 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 		return series;
 	}
 
-	//////////////////////////////////////////////////////////PROTECTED//////////////////////////////////////////////////////////////	
-	
+	//////////////////////////////////////////////////////////PROTECTED//////////////////////////////////////////////////////////////
+
 	protected List<GeneralSeries> getSeriesFromSeriesInstanceUIDs(List<String> seriesIds,
                                                                   List<SiteData> authorizedSites,
 			                                                      List<String> authorizedSeriesSecurityGroups) throws DataAccessException	{
 		List<GeneralSeries> seriesList = null;
-				
+
 		List<List<String>> breakdownList = Util.breakListIntoChunks(seriesIds, 900);
 		for (List<String> unitList : breakdownList) {
-				
+
 			DetachedCriteria criteria = DetachedCriteria.forClass(GeneralSeries.class);
 			if(authorizedSeriesSecurityGroups!=null) {
 				setSeriesSecurityGroups(criteria, authorizedSeriesSecurityGroups);
@@ -278,7 +466,7 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 		}
 		return seriesList;
 	}
-	
+
 	//////////////////////////////////////////PRIVATE/////////////////////////////////////////
 
     private static int CHUNK_SIZE = 500;
@@ -314,7 +502,7 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 			                                          List<String> authorizedSeriesSecurityGroups)
 	{
 		List<GeneralSeries> seriesList = null;
-		
+
 		DetachedCriteria criteria = DetachedCriteria.forClass(GeneralSeries.class);
 		setSeriesSecurityGroups(criteria, authorizedSeriesSecurityGroups);
 		criteria.add(Restrictions.in("patientId", patientIDs));
@@ -394,4 +582,63 @@ public class GeneralSeriesDAOImpl extends AbstractDAO
 			criteria.add(Restrictions.isNull("securityGroup"));
 		}
 	}
+	/**
+	 * Fetch set of collection values by giving name.
+	 *
+	 * This method is used for NBIA Rest API filter.
+	 */
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<SiteData> getAuthorizedSecurityGroups(Map<String, String> queryParams)
+			throws DataAccessException {
+
+		List<SiteData> returnList = new ArrayList<SiteData>();
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(GeneralSeries.class);
+		criteria.setProjection(Projections.distinct(Projections.projectionList().add(Projections.property("project")).add(Projections.property("site"))));
+		criteria.add(Restrictions.eq("visibility","1"));
+		Set<String> paramLst = queryParams.keySet();
+		for (String param : paramLst) {
+			criteria.add(Restrictions.eq(param,queryParams.get(param)));
+		}
+
+		List<Object[]> result = criteria.list();
+		Iterator<Object[]> iter = result.iterator();
+		 while (iter.hasNext()) {
+		 Object[] row = iter.next();
+		 	returnList.add(new SiteData((String) row[0]+ "//" +(String) row[1]));
+		}
+		return returnList;
+	}
+
+	private String getProjectNames(Collection<SiteData> sites) {
+		if(sites == null || sites.isEmpty()) {
+			return null;
+		}
+		String projectNameStmt = "";
+    	for (Iterator<SiteData> i = sites.iterator(); i.hasNext();) {
+    		SiteData str = i.next();
+            projectNameStmt += ("'" + str.getCollection().toUpperCase() + "'");
+
+            if (i.hasNext()) {
+            	projectNameStmt += ",";
+            }
+        }
+    	return projectNameStmt;
+    }
+	private String getSiteNames(Collection<SiteData> sites) {
+		if(sites == null || sites.isEmpty()) {
+			return null;
+		}
+		String siteWhereStmt = "";
+    	for (Iterator<SiteData> i = sites.iterator(); i.hasNext();) {
+    		SiteData str = i.next();
+            siteWhereStmt += ("'" + str.getSiteName().toUpperCase() + "'");
+
+            if (i.hasNext()) {
+            	siteWhereStmt += ",";
+            }
+        }
+    	return siteWhereStmt;
+    }
+
+
 }

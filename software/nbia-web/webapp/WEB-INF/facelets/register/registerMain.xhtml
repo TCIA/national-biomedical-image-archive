@@ -23,7 +23,7 @@ L-->
        cellpadding="0" 
        width="600" 
        summary="" 
-       border="0">
+       border="0" align="center">
   <tbody>
     <tr>
       <td colspan="2">
@@ -42,7 +42,7 @@ L-->
         <div align="center"></div>
       </td>
       <td valign="top">
-        <ncia:help alt="help" label="images/help_icon.png" helpId="1-+Getting+Started+in+NBIA#id-1-GettingStartedinNBIA-RegisteringaNewUser" />
+        <ncia:help alt="help" label="images/help_icon.png" helpId="-registernewuser" />
       </td>
     </tr>
     <tr>
@@ -73,7 +73,7 @@ L-->
                        cellspacing="3">
                   <tr class="formMessage">
                     <td width="20%">
-                      <LABEL FOR="MAINbody:d:j_id286">Title:</LABEL>
+                      <LABEL FOR="MAINbody:registerForm:registerUsrTitle">Title:</LABEL>
                     </td>
                     <td width="30%">
                       <span>
@@ -91,7 +91,7 @@ L-->
                   <tr>
                     <td>
                       <span class="formFieldWhite">
-                        <h:selectOneMenu value="#{registerBean.title}">
+                        <h:selectOneMenu id="registerUsrTitle" value="#{registerBean.title}">
                           <f:selectItems value="#{registerBean.titleItems}"/>
                         </h:selectOneMenu>  
                       </span>
@@ -240,7 +240,8 @@ L-->
             <!--           
             <tr>
               <td style="text-align: left">
-                <h:selectBooleanCheckbox value="#{registerBean.registerToUsersList}"/>
+                <h:outputLabel for="registerToUserList"  value="registerToUserList" style="display:none"/>
+                <h:selectBooleanCheckbox value="#{registerBean.registerToUsersList}" id="registerToUserList"/>
                 <h:outputText value="Also register me for the NBIA user group email list."/>                  
               </td>
             </tr>                                                
@@ -252,7 +253,7 @@ L-->
                 <table border="0" cellpadding="2" cellspacing="0">
                   <tr>
                     <td>
-                      <h:commandButton alt="register"
+                      <h:commandButton alt="register" title="register"
                                        image="images/register.gif" 
                                        action="#{registerBean.register}"/>
                     </td>
