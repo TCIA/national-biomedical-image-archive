@@ -26,24 +26,24 @@ L--%>
              cellpadding="0"
              class="hdrBG">
         <tr>
-          <td width="283" height="37" align="left">
+          <td width="300" height="38" align="left">
             <a href="http://www.cancer.gov">
               <img alt="National Cancer Institute" 
-                   src="images/logotype.gif"
-                   width="283" 
-                   height="37" 
+                   src="images/nci-header.png"
+                   width="300" 
+                   height="38" 
                    border="0"/>
             </a>
           </td>
           <td>
             &nbsp;
           </td>
-          <td width="295" height="37" align="right">
-            <a href="http://www.cancer.gov">
+          <td width="300" height="38" align="right">
+            <a href="http://www.nih.gov">
               <img alt="U.S. National Institutes of Health | www.cancer.gov"
-                   src="images/tagline.gif" 
-                   width="295" 
-                   height="37" 
+                   src="images/nci-link.png" 
+                   width="300" 
+                   height="38" 
                    border="0"/>
             </a>
           </td>
@@ -60,10 +60,10 @@ L--%>
             <table border="0" cellpadding="0" cellspacing="0"
               width="100%" height="45">
               <tr>
-                <td bgcolor="4C5D87">
-                  <img src="images/Logo-NCIA.jpg" 
-                       width="500"
-                       height="53"
+                <td bgcolor="FFFFFF">
+                  <img src="images/logo.png" 
+                       width="240"
+                       height="52"
                        alt="Logo"/>
                 </td>
               </tr>
@@ -92,28 +92,58 @@ L--%>
         <div align="center">
           <a href="http://www.cancer.gov/" style="text-decoration: none;"> 
             <img src="images/footer_nci.gif" 
-                 width="63" 
+              width="72" 
                  height="31"
                  alt="National Cancer Institute" 
                  border="0"/>
           </a>
+          <a href="https://cabig.nci.nih.gov/" style="text-decoration: none;">
+            <img src="images/footer_cabig.gif"
+              width="120" 
+              height="31"
+              alt="NCI caBIG Home"
+              border="0"/>
+          </a>
+          <a href="http://www.rsna.org/" style="text-decoration: none;">
+            <img src="images/footer_rsna.gif" 
+              width="73" 
+              height="31"
+              alt="rsna.org" 
+              border="0"/>
+          </a>
+          <img src="images/separator.gif" alt="" width="31" height="31" />
+          <a href="http://imaging.cancer.gov/" style="text-decoration: none;">
+            <img src="images/footer_cip.gif"
+              width="122" 
+              height="31"
+              alt="NCI Cancer Imaging Program Home"
+              border="0"/>
+          </a>
+          <a href="http://medicine.wustl.edu/" style="text-decoration: none;"> 
+            <img src="images/footer_wusm.gif" 
+              width="90" 
+              height="31"
+              alt="Washington University in St. Louis School of Medicine" 
+              border="0"/>
+          </a>
+          <img src="images/separator.gif" alt="" width="31" height="31" />
           <a href="http://www.dhhs.gov/" style="text-decoration: none;"> 
             <img src="images/footer_hhs.gif" 
-                 width="39" 
+              width="47" 
                  height="31"
                  alt="Department of Health and Human Services" 
                  border="0"/>
           </a>
           <a href="http://www.nih.gov/" style="text-decoration: none;">
             <img src="images/footer_nih.gif" 
-                 width="46" 
+              width="51" 
                  height="31"
                  alt="National Institutes of Health" 
                  border="0"/>
           </a>
           <a href="http://www.firstgov.gov/" style="text-decoration: none;">
-            <img src="images/footer_firstgov.gif" 
-                 width="91" 
+            <img src="images/footer_usagov.gif" 
+              width="127" 
                  height="31"
                  alt="FirstGov.gov" 
                  border="0"/>

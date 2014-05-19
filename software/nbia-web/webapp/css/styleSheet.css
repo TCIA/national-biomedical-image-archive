@@ -48,7 +48,7 @@ a:hover {
 h2 {
   font-weight: bold; 
   font-size: 1.6em; 
-  color: #5c5c5c; 
+  color: #706f5d; 
   text-align: center
 }
 
@@ -65,12 +65,41 @@ p {
 
 /* ********************************* BEGIN MAIN LAYOUT RULES ***************************************/
 .hdrBG {
-  background-color: #a90101
+  /* background-color: #a90101 */
 }
 
 .subhdrBG {
   background-color: #475b82
 }
+
+/** Additions for TCIA **/
+.header {
+  background-color: #ffffff;
+  width: 960px;
+  height: 114px;
+  margin-right: auto;
+  background-image: url("../images/header-background.png");
+  background-repeat: no-repeat;
+  background-position: left top;
+  position: relative;
+  display: block;
+}
+.header a.NciLogo{
+  position: absolute;
+  top: 4px;
+  right: 60px;
+}
+.header a.TciaLogo{
+  position: absolute;
+  top: 42px;
+  left: 5px;
+}
+.header a.FrederickLogo{
+  position: absolute;
+  top: 42px;
+  left: 290px;
+}
+/** End additions for TCIA **/
 
 .ftrTable {
   padding-top: 0.4em
@@ -80,7 +109,7 @@ td.mainMenu {
   border-top: #cccccc 1px solid; 
   border-bottom: #cccccc 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif; 
-  background-color: #5c5c5c;
+  background-color: #706f5d;
 }
 
 td.mainMenuItem {
@@ -88,7 +117,7 @@ td.mainMenuItem {
   padding-left: 1em; 
   font-weight: bold; 
   font-size: 0.6em; 
-  background-color: #5c5c5c;
+  background-color: #706f5d;
 }
 
 td.mainMenuItemOver {
@@ -111,7 +140,7 @@ td.footerMenu {
   border-top: #cccccc 1px solid; 
   border-bottom: #cccccc 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif; 
-  background-color: #5c5c5c
+  background-color: #706f5d
 }
 
 td.footerMenuItem {
@@ -119,7 +148,7 @@ td.footerMenuItem {
   padding-left: 1em; 
   font-weight: bold; 
   font-size: 0.6em; 
-  background-color: #5c5c5c
+  background-color: #706f5d
 }
 
 td.footerMenuItemOver {
@@ -143,7 +172,7 @@ td.subMenuPrimaryTitle {
   font-size: 0.6em; 
   color: #ffffff; 
   border-bottom: #cccccc 1px solid; 
-  background-color: #5c5c5c
+  background-color: #706f5d
 }
 
 td.subMenuPrimaryItems {
@@ -185,26 +214,26 @@ td.subMenuFill {
   border-top: #cccccc 1px solid; 
   border-bottom: #cccccc 1px solid;
   color: #ffffff; 
-  background-color: #5c5c5c;
+  background-color: #706f5d;
   margin-left: auto; 
   margin-right: auto;
   font-family: arial,helvetica,verdana,sans-serif;
 }
 
 a.subMenuPrimary:link {
-  color: #5c5c5c; 
+  color: #706f5d; 
   white-space: nowrap; 
   text-decoration: underline
 }
 
 a.subMenuPrimary:visited {
-  color: #5c5c5c; 
+  color: #706f5d; 
   white-space: nowrap; 
   text-decoration: underline
 }
 
 a.subMenuPrimary:active {
-  color: #5c5c5c; 
+  color: #706f5d; 
   white-space: nowrap; 
   text-decoration: underline
 }
@@ -272,10 +301,10 @@ a.footerMenuLink:hover {
   font-family:arial,helvetica,verdana,sans-serif;
   background-color:#F4F4F5;
   color:#000000;
-  border-right:1px solid #5C5C5C;
-  border-bottom:1px solid #5C5C5C;
+  border-right:1px solid #706f5d;
+  border-bottom:1px solid #706f5d;
   text-align:left;
-  border-left: 1px solid #5C5C5C;
+  border-left: 1px solid #706f5d;
 }
 
 .formTitle{
@@ -300,17 +329,17 @@ a.footerMenuLink:hover {
 td.formField{ /* for the cell that contains the form elements */
   font-family:arial,helvetica,verdana,sans-serif;
   color:#000000; /* constant: black */
-  border-right:1px solid #5C5C5C; /* constant: dark gray */
-  border-bottom:1px solid #5C5C5C; /* constant: dark gray */
+  border-right:1px solid #706f5d; /* constant: dark gray */
+  border-bottom:1px solid #706f5d; /* constant: dark gray */
   background-color:#F4F4F5; /* constant: light gray */
 }
 
 input.formField {
-  border-right: #5c5c5c 1px solid;
-  border-top: #5c5c5c 1px solid; 
+  border-right: #706f5d 1px solid;
+  border-top: #706f5d 1px solid; 
   font-size: 1em; 
-  border-left: #5c5c5c 1px solid; 
-  border-bottom: #5c5c5c 1px solid; 
+  border-left: #706f5d 1px solid; 
+  border-bottom: #706f5d 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif
 }
 
@@ -318,8 +347,8 @@ td.formFieldWhite {
   font-family:arial,helvetica,verdana,sans-serif;
   font-size:0.7em;
   color:#000000; /* constant: black */
-  border-right:1px solid #5C5C5C; /* constant: dark gray */
-  border-bottom:1px solid #5C5C5C; /* constant: dark gray */
+  border-right:1px solid #706f5d; /* constant: dark gray */
+  border-bottom:1px solid #706f5d; /* constant: dark gray */
   background-color:#FFFFFF; /* constant: light gray */
 }
 
@@ -333,10 +362,10 @@ td.formFieldLogin {
 
 
 input.actionButton {
-  border-right: #5c5c5c 2px solid; 
+  border-right: #706f5d 2px solid; 
   border-top: #cccccc 1px solid; 
   border-left: #cccccc 1px solid; 
-  border-bottom: #5c5c5c 2px solid
+  border-bottom: #706f5d 2px solid
 }
 .formMessage {
   color: #000000; 
@@ -346,27 +375,27 @@ input.actionButton {
 
 .dataTablePrimaryLabel {
   text-align: left;
-  border-right: #5c5c5c 1px solid; 
-  border-top: #5c5c5c 1px solid; 
+  border-right: #706f5d 1px solid; 
+  border-top: #706f5d 1px solid; 
   font-weight: bold; 
   /*font-size: 0.8em;*/
-  border-left: #5c5c5c 1px solid; 
+  border-left: #706f5d 1px solid; 
   color: #ffffff; 
   font-family: arial,helvetica,verdana,sans-serif; 
-  background-color: #5c5c5c
+  background-color: #706f5d
 }
 
 .dataTableHeader {
-  border-right: #5c5c5c 1px solid; 
+  border-right: #706f5d 1px solid; 
   font-weight: bold; 
   color: #000000; 
-  border-bottom: #5c5c5c 1px solid; 
+  border-bottom: #706f5d 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif; 
   background-color: #cccccc
 }
 .dataTable {
-  border-top: #5c5c5c 1px solid; 
-  border-left: #5c5c5c 1px solid; 
+  border-top: #706f5d 1px solid; 
+  border-left: #706f5d 1px solid; 
   color: #000000; 
   font-family: arial,helvetica,verdana,sans-serif
 }
@@ -374,8 +403,8 @@ input.actionButton {
 
 .seriesDataCell {
   padding-left: 3px;
-  border-right: #5c5c5c 1px solid; 
-  border-bottom: #5c5c5c 1px solid;     
+  border-right: #706f5d 1px solid; 
+  border-bottom: #706f5d 1px solid;     
 }
 .dataRowLight {
   color: #000000; 
@@ -386,24 +415,24 @@ input.actionButton {
   background-color: #f4f4f5
 }
 .dicomDataRowLight {
-  border-right: #5c5c5c 1px solid;
-  border-bottom: #5c5c5c 1px solid; 
+  border-right: #706f5d 1px solid;
+  border-bottom: #706f5d 1px solid; 
   color: #000000; 
   background-color: #ffffff; 
   padding-left: 1.2em;
 }
 .dicomDataRowDark {
-  border-right: #5c5c5c 1px solid; 
-  border-bottom: #5c5c5c 1px solid; 
+  border-right: #706f5d 1px solid; 
+  border-bottom: #706f5d 1px solid; 
   color: #000000; 
   background-color: #f4f4f5; 
   padding-left: 1.2em;
 }
 .dataCellText {
-  border-top: #5c5c5c 1px solid; 
-  border-left: #5c5c5c 1px solid; 
-  border-right: #5c5c5c 1px solid;
-  border-bottom: #5c5c5c 1px solid;
+  border-top: #706f5d 1px solid; 
+  border-left: #706f5d 1px solid; 
+  border-right: #706f5d 1px solid;
+  border-bottom: #706f5d 1px solid;
   text-align: left
 }
 
@@ -436,7 +465,7 @@ table.contentPageII {
   font-weight: bold; 
   font-size: 1em; 
   color: #ffffff; 
-  background-color: #5c5c5c
+  background-color: #706f5d
 }
 
 .sidebarContent {
@@ -532,8 +561,8 @@ table.contentPageII {
   padding-left:0.8em;
   background-color:#6E81A6;
   color:#FFFFFF;
-  border-right: #5c5c5c 1px solid; 
-  border-bottom: #5c5c5c 1px solid;     
+  border-right: #706f5d 1px solid; 
+  border-bottom: #706f5d 1px solid;     
 }
 .contentPageII {
   color: #000000; 
@@ -581,7 +610,7 @@ table.contentPageII {
 }
 
 .emptyDataCell {
-  background-color: #5c5c5c
+  background-color: #706f5d
 }
 
 
@@ -675,7 +704,7 @@ table.contentPageII {
 .submissionReportTitle {
   margin-top: 30px;
   margin-bottom: 30px;
-  color:#5C5C5C;
+  color:#706f5d;
   font-size:1.6em;
   font-weight:bold;
 }
@@ -693,7 +722,7 @@ table.contentPageII {
   padding-left:0.8em;
   background-color:#6E81A6;
   color:#FFFFFF;
-  border: #5c5c5c 1px solid;    
+  border: #706f5d 1px solid;    
 }
 /* ********************************* END SUBMISSION REPORTS RULES ***************************************/
 
@@ -709,8 +738,8 @@ table.contentPageII {
 .submissionView th {
 	font-family: arial, helvetica, verdana, sans-serif;
 	padding: 3px 3px 3px 3px;
-	color: #5C5C5C;
-	/*background-color: #5C5C5C;*/
+	color: #706f5d;
+	/*background-color: #706f5d;*/
 	background: white url(../images/shadeactive.gif) top left repeat-x;
 	text-align: left;
 }
@@ -801,4 +830,41 @@ table.promptbox {
     float: none;
 }
 /* end */
+
+/* FOOTER for TCIA */
+ul.footnav {
+  text-align: center;
+  background-color: #706F5D;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  padding: 0;
+  margin: 0;
+}
+.footnav li {
+  display: inline;
+  margin-left: -2px;
+}
+.footnav li a, .footnav li a:visited {
+  display: inline-block;
+  color: #fff;
+  border-right: #FFF 1px solid;
+  border-left: #706F5D 1px solid;
+  padding: 5px 20px 5px 18px;
+  text-decoration: none;
+}
+.footnav li a:hover, .footnav li a:focus {
+  background-color: #475b82;
+}
+ul.footnav li.first a {
+  border-left: #FFF 1px solid;
+}
+.footnav img {
+  vertical-align: middle;
+}
+p.footer {
+  text-align: center;
+  color: #999;
+  font-size: 10px;
+  font-family: 'Oswald', Arial, Helvetica, sans-serif;
+}
 
