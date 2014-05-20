@@ -26,7 +26,7 @@ L--%>
              cellpadding="0"
              class="hdrBG">
         <tr>
-          <td width="300" height="38" align="left">
+          <td width="283" height="37" align="left">
             <a href="http://www.cancer.gov">
               <img alt="National Cancer Institute" 
                    src="images/white-ncilogo.gif"
@@ -38,8 +38,8 @@ L--%>
           <td>
             &nbsp;
           </td>
-          <td width="300" height="38" align="right">
-            <a href="http://www.nih.gov">
+          <td width="295" height="37" align="right">
+            <a href="http://www.cancer.gov">
               <img alt="U.S. National Institutes of Health" src="images/white-nihtext.gif" border="0"/>
 	      <img alt="www.cancer.gov" src="images/white-nciurl.gif" border="0"/>    
             </a>
