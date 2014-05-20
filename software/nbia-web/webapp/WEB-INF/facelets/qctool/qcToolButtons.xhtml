@@ -17,9 +17,11 @@ L-->
                 xmlns:ice="http://www.icesoft.com/icefaces/component">
                                
   <ice:panelGroup>
-      <h:commandButton image="images/checkall.gif" 
+      <h:commandButton image="images/checkall.gif" alt="check all" title="check all"
+      				   onclick="toggleBooleanCheckAll();" 
                        action="#{qcToolSearchBean.selectAll}" />
-      <h:commandButton image="images/uncheckall.gif"
+      <h:commandButton image="images/uncheckall.gif" alt="uncheck all" title="uncheck all"
+      				   onclick="toggleBooleanUnCheckAll();"
                        action="#{qcToolSearchBean.unselectAll}" />
   </ice:panelGroup>  
 </ui:composition>

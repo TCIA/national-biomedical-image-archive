@@ -27,7 +27,7 @@ L-->
 					</td>
 					<td>
 						<div align="right">
-							<ncia:help label="images/help_icon.png" helpId="6+-+NBIA+Administration#id-6-NBIAAdministration-UsingtheQualityControlTool" />
+							<ncia:help label="images/help_icon.png" helpId="-useQCtool" />
 						</div>
 					</td>
 				</tr>
@@ -46,7 +46,7 @@ L-->
 					<td>
 						<div align="right">
 							<ncia:help label="images/help_icon.png"
-								helpId="6+-+NBIA+Administration#id-6-NBIAAdministration-ApprovingImageDeletions" />
+								helpId="-approveimagedeletions" />
 						</div>
 					</td>
 				</tr>
@@ -70,7 +70,7 @@ L-->
         </f:subview>
         <f:subview id="qcToolDeleteView" rendered="#{not qcToolBean.superRole}">
                 <ice:panelTabSet tabChangeListener="#{dynamicQcSearchBean.tabChangeListener}" selectedIndex="#{dynamicQcSearchBean.tabIndex}">
-                        <ice:panelTab id="tab1" label="classic">                
+                        <ice:panelTab id="tab1" label="Classic">                
                             <ui:include src="./qcToolClassicView.xhtml"/>
                         </ice:panelTab>         
                     <ice:panelTab id="tab2" label="Dynamic">                

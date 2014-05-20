@@ -16,7 +16,7 @@ L-->
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ice="http://www.icesoft.com/icefaces/component">
-  <ui:param name="helpId" value="6+-+NBIA+Administration#id-6-NBIAAdministration-ImageSubmissionReport"/>
+  <ui:param name="helpId" value="-imagesubmisstionreport"/>
   
   <ui:define name="banner">
     <ice:outputText>
@@ -80,11 +80,11 @@ L-->
                     <ice:commandLink id="dayDetailsLink"
                                      actionListener="#{imageSubmissionReportBean.dayDetailsClicked}">
                       <f:attribute name="day" value="#{detail.key}"/>
-                      <h:graphicImage id="collapse"
+                      <h:graphicImage id="collapse" alt="collapse"
                                       value="/xmlhttp/css/rime/css-images/tree_nav_top_close_no_siblings.gif"
                                       rendered="#{detail.value.expanded}"
                                       style="border:0;vertical-align:middle"/>
-                      <h:graphicImage id="expand"
+                      <h:graphicImage id="expand" alt="expand"
                                       value="/xmlhttp/css/rime/css-images/tree_nav_top_open_no_siblings.gif"
                                       rendered="#{not detail.value.expanded}"
                                       style="border:0;vertical-align:middle"/>                              
@@ -143,11 +143,11 @@ L-->
                     <ice:commandLink id="dayDetailsLink"
                                      actionListener="#{imageSubmissionReportBean.correctedDayDetailsClicked}">
                       <f:attribute name="day" value="#{detail.key}"/>
-                      <h:graphicImage id="collapse"
+                      <h:graphicImage id="collapse" alt="collapse"
                                       value="/xmlhttp/css/rime/css-images/tree_nav_top_close_no_siblings.gif"
                                       rendered="#{detail.value.expanded}"
                                       style="border:0;vertical-align:middle"/>
-                      <h:graphicImage id="expand"
+                      <h:graphicImage id="expand" alt="expand"
                                       value="/xmlhttp/css/rime/css-images/tree_nav_top_open_no_siblings.gif"
                                       rendered="#{not detail.value.expanded}"
                                       style="border:0;vertical-align:middle"/>                              

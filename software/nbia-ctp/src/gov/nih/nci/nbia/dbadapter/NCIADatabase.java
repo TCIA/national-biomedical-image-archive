@@ -74,7 +74,6 @@ public class NCIADatabase extends DatabaseAdapter{
     		delegator.setCorrectFileSize(anonymizedFile);
     		delegator.process(file, storedFile, url);
     		status = Status.OK;
-
     	}catch(RuntimeException rx){
     		log.error("Dicom Submission Failed!");
     		status = Status.FAIL;

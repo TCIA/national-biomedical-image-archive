@@ -45,7 +45,7 @@ public class Basket {
      */	
     public List<BasketSeriesItemBean> getSeriesItems() {
         List<BasketSeriesItemBean> toSort = new ArrayList<BasketSeriesItemBean>(seriesItems.values());
-        Collections.sort(toSort);
+        //Collections.sort(toSort);
 
         return toSort;
     }
@@ -288,7 +288,16 @@ System.out.println("!!!form get= "+result.getSeriesSearchResult().getId() +
 		returnBean.setStudyPkId(seriesDTO.getStudyId());
 		returnBean.setTotalImagesInSeries(seriesDTO.getNumberImages());
 		returnBean.setTotalSizeForAllImagesInSeries(seriesDTO.getTotalSizeForAllImagesInSeries());
-
+		returnBean.setStudyDate(seriesDTO.getStudyDate());
+		returnBean.setStudyDescription(seriesDTO.getStudyDescription());
+		returnBean.setSeriesDescription(seriesDTO.getDescription());
 		return returnBean;
+	}
+
+
+	public void removeSelectedSeries(String toDeleteSeriesId) {
+		System.out.println("id to delete" + toDeleteSeriesId);
+        seriesItems.remove(toDeleteSeriesId);
+        fireChangeEvent();
 	}        
 }

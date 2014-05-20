@@ -39,6 +39,7 @@ L-->
 	<property name="nbia-domain.base.dir" value="${software.dir}/nbia-domain" />
 	<property name="nbia-util.base.dir" value="${software.dir}/nbia-util" />
 	<property name="nbia-web.base.dir" value="${software.dir}/nbia-web" />
+	<property name="nbia-api.base.dir" value="${software.dir}/nbia-api" />
 	<property name="nbia-download-manager.base.dir" value="${software.dir}/nbia-download-manager" />
 	<property name="nbia-download.base.dir" value="${software.dir}/nbia-download" />
 	<property name="nbia-remote-search.base.dir" value="${software.dir}/nbia-remote-search" />
@@ -80,6 +81,7 @@ L-->
 	<property name="nbia-services-grid.build.target" value="run" />
 	<property name="nbia-domain.build.target" value="all" />
 	<property name="nbia-web.build.target" value="run" />
+	<property name="nbia-api.build.target" value="run" />
 	<property name="nbia-download-manager.build.target" value="run" />
 	<property name="nbia-download.build.target" value="run" />
 	<!-- Default install time targets passed by deploy targets to the installer, can be overridden by being set on the command line if different target is desitred.  -->
@@ -99,6 +101,9 @@ L-->
 	<property name="ncia-core-grid.artifact.dir" value="${ncia-core-grid.base.dir}/target" />
 	<property name="nbia-grid.artifact.dir" value="${nbia-grid.base.dir}/target" />
 	<property name="nbia-ctp.artifact.dir" value="${nbia-ctp.base.dir}/target" />
+	<!-- solr -->
+	<property name="solr.dist.dir" value="${dist.exploded.dir}/${solr.dist.relative.dir}" />
+	
 	<!-- Paths -->
 	<path id="project.classpath">
 		<fileset dir="${lib.dir}">
@@ -212,6 +217,10 @@ L-->
 				<filter token="show.collection.search.criteria" value="${show.collection.search.criteria}" />
 				<filter token="show.anatomical.search.criteria" value="${show.anatomical.search.criteria}" />
 				<filter token="gov.nih.nci.ncia.download.no.retry" value="${gov.nih.nci.ncia.download.no.retry}" />
+				<filter token="gov.nih.nci.ncia.encrypt.key" value="${gov.nih.nci.ncia.encrypt.key}" />
+				<filter token="gov.nih.nci.ncia.wiki.context.sensitive.help.url" value="${nbia.wiki.context.sensitive.help.url}" />
+				<filter token="gov.nih.nci.ncia.solr.home" value="${gov.nih.nci.ncia.solr.home}"/>
+				<filter token="gov.nih.nci.ncia.solr.updateinterval" value="${gov.nih.nci.ncia.solr.updateinterval}"/>
 			</filterset>
 		</copy>
 		
@@ -334,7 +343,7 @@ L-->
 	<target name="build:all" description="Builds all the sub projects, putting artifacts in the project level target directory, used by distribution targets to make distributions" depends="
 		clean,
 		init,
-		build:nbia:portal:config, compute-tag-properties, build:nbia-web, build:nbia-secure-grid, build:nbia-unsecure-grid, dist:ctp-client, dist:ctp-server">
+		build:nbia:portal:config, compute-tag-properties, build:nbia-web, build:nbia-secure-grid, build:nbia-unsecure-grid, dist:ctp-client, dist:ctp-server,dist:solr, build:nbia-api">
 	</target>
 	
 		<target name="build:all:niams" description="Builds all the sub projects, putting artifacts in the project level target directory, used by distribution targets to make distributions" depends="
@@ -372,7 +381,7 @@ L-->
       <property name="database.driver" value="${database.driver}"/-->
 		</ant>
 	</target>
-	
+	<!-- rewrite the code since github does not support $headURL$ so whenever to display tag in home page build with '-Dnbia_prod_build_tag=value' to diplay on home page -->
 	<target name="compute-tag-properties">
 	   <if>
              <and>
@@ -506,6 +515,7 @@ L-->
 				<filter token="ctp.server.king.password" value="${ctp.server.king.password}" />
 			</filterset>
 		</copy>
+		<copy file="${common.dir}/resources/ctp/server/Launcher.properties" todir="${nbia-ctp.dist.dir}/CTP_Server/CTP"/>
 		<copy file="${common.dir}/resources/ctp/server/config-block.xml" tofile="${nbia-ctp.dist.dir}/CTP_Server/CTP/config.xml">
 			<filterset>
 				<filter token="ctp.server.port" value="${ctp.server.port}" />
@@ -600,6 +610,7 @@ java -Xmx1024m -cp xml-apis-1.0.b2.jar -Djava.ext.dirs="${jai.classpath};%JAVA_H
 			<property name="jar-signing.execution.time" value="${jar-signing.execution.time}" />
 			<!-- Need absolution location, relative path would fail in sub-project since file would not exist -->
 			<property name="jar-signing.keystore.abs-location" value="${jar-signing.keystore.abs-location}" />
+			<property name="nbia.wiki.context.sensitive.help.url" value="${nbia.wiki.context.sensitive.help.url}" />
 		</ant>
 	</target>
 	<!-- dont call this directly.  let the ear builder call it to ensure remote search is ready -->
@@ -833,188 +844,176 @@ java -Xmx1024m -cp xml-apis-1.0.b2.jar -Djava.ext.dirs="${jai.classpath};%JAVA_H
 			<property name="project.name" value="${project.name}" />
 			<property name="nbia.version" value="${nbia.version}" />
 			<property name="nbia_prod_build_tag.final" value="${nbia_prod_build_tag.final}" />
+			<property name="nbia.wiki.context.sensitive.help.url" value="${nbia.wiki.context.sensitive.help.url}" />
+			<property name="nbia.wiki.user.guide.url" value="${nbia.wiki.user.guide.url}" />
 		</ant>
 	</target>
 	
-	<target name="-branding">
-	<!-- Clean up working area -->
-    <delete dir="${target.dir}/temp/nbia-ear"/>
-    <delete dir="${target.dir}/temp/nbia-war"/>
-    <!-- Make working directories -->
-    <mkdir dir="${target.dir}/temp/nbia-ear"/>
-    <mkdir dir="${target.dir}/temp/nbia-war"/>
-    
-    <!-- Extract required archives -->
-    <unzip src="${nbia-web.dist.dir}/nbia.ear" dest="${target.dir}/temp/nbia-ear"/>
-    <unzip src="${target.dir}/temp/nbia-ear/nbia.war" dest="${target.dir}/temp/nbia-war"/>
-    <property name="webapp.dir.path" value="${target.dir}/temp/nbia-war" />
-    
-    <sequential>
-      <!--   add cancer center logo header if necessary -->
-      <if>
-        <or>
-          <not>
-            <isset property="cancer.center.logo"/>
-          </not>
-          <equals arg1="${common.resources.dir}/branding/${cancer.center.logo}" arg2=""/>
-        </or>
-        <then>
-          <echo>No Cancer Center logo specified.  Substituting CCLOGO with empty string.</echo>
-        </then>
-        <else>
-          <basename property="cc.logo.filename" file="${common.resources.dir}/branding/${cancer.center.logo}"/>
-          <copy file="${common.resources.dir}/branding/${cancer.center.logo}" tofile="${webapp.dir.path}/images/${cc.logo.filename}" />
-          <!-- in case no background image provided -->
-          <if>
-            <or>
-              <not>
-                <isset property="cancer.center.background" />
-              </not>
-              <equals arg1="${common.resources.dir}/branding/${cancer.center.background}" arg2=""/>
-            </or>
-            <then>
-              <property name="cancer.center.background" value="whitebg.jpg" />
-              <basename property="cc.bgimage.filename" file="${common.resources.dir}/branding/${cancer.center.background}"/>
-            </then>
-            <else>
-              <basename property="cc.bgimage.filename" file="${common.resources.dir}/branding/${cancer.center.background}"/>
-              <copy file="${common.resources.dir}/branding/${cancer.center.background}"
-                    tofile="${webapp.dir.path}/images/${cc.bgimage.filename}" />
-            </else>
-          </if>
-
-          <basename property="cc.bgimage.filename" file="${common.resources.dir}/branding/${cancer.center.background}"/>
-          <loadfile property="cc.logo.header"
-                    srcFile="${webapp.dir.path}/WEB-INF/facelets/layout/ccHeader.xhtml">
-            <filterchain>
-              <expandproperties/>
-             </filterchain>
-          </loadfile>
-
-
-          <echo file="${webapp.dir.path}/WEB-INF/facelets/layout/nciHeader.xhtml" append="false">${cc.logo.header}</echo>
-        </else>
-      </if>
-      <!-- end of external cancer center logo header  -->
-
-      <if>
-
-        <and>
-          <not>
-            <equals arg1="${common.resources.dir}/branding/${branding.left.submenu.quicklinks.path}" arg2=""/>
-          </not>
-          <isset property="branding.left.submenu.quicklinks.path"/>
-        </and>
-
-        <then>
-          <copy file="${common.resources.dir}/branding/${branding.left.submenu.quicklinks.path}"
-                tofile="${webapp.dir.path}/WEB-INF/facelets/layout/quickLinks.xhtml"
-                overwrite="true"/>
-        </then>
-      </if>
-
-      <if>
-
-        <and>
-          <not>
-            <equals arg1="${common.resources.dir}/branding/${branding.welcome.image.path}" arg2=""/>
-          </not>
-          <isset property="branding.welcome.image.path"/>
-        </and>
-
-        <then>
-          <copy file="${common.resources.dir}/branding/${branding.welcome.image.path}"
-                tofile="${webapp.dir.path}/images/bannerHome.gif"
-                overwrite="true"/>
-        </then>
-      </if>
-
-      <if>
-
-        <and>
-          <not>
-            <equals arg1="${common.resources.dir}/branding/${branding.welcome.text.path}" arg2=""/>
-          </not>
-          <isset property="branding.welcome.text.path"/>
-        </and>
-        <then>
-          <copy file="${common.resources.dir}/branding/${branding.welcome.text.path}"
-                tofile="${webapp.dir.path}/WEB-INF/facelets/welcomeText.xhtml"
-                overwrite="true"/>
-        </then>
-      </if>
-
-      <if>
-
-        <and>
-          <not>
-            <equals arg1="${common.resources.dir}/branding/${branding.welcome.title.path}" arg2=""/>
-          </not>
-          <isset property="branding.welcome.title.path"/>
-        </and>
-        <then>
-          <copy file="${common.resources.dir}/branding/${branding.welcome.title.path}"
-                tofile="${webapp.dir.path}/WEB-INF/facelets/welcomeTitle.xhtml"
-                overwrite="true"/>
-        </then>
-      </if>
-
-      <if>
-        <and>
-          <not>
-            <equals arg1="${branding.applogo.visible}" arg2=""/>
-          </not>
-          <isset property="branding.applogo.visible"/>
-        </and>
-        <then>
-          <if>
-            <equals arg1="${branding.applogo.visible}" arg2="no"/>
-            <then>
-              <copy file="${webapp.dir.path}/WEB-INF/facelets/layout/empty.xhtml"
-                    tofile="${webapp.dir.path}/WEB-INF/facelets/layout/appHeader.xhtml"
-                    overwrite="true"/>
-            </then>
-            <else>
-              <copy file="${branding.applogo.path}"
-                    tofile="${webapp.dir.path}/images/Logo-NCIA.jpg"
-                    overwrite="true"/>
-            </else>
-          </if>
-        </then>
-      </if>
-
-      <if>
-        <and>
-          <not>
-            <equals arg1="${branding.footer.path}" arg2=""/>
-          </not>
-          <isset property="branding.footer.path"/>
-        </and>
-        <then>
-          <copy file="${branding.footer.path}"
-                tofile="${webapp.dir.path}/WEB-INF/facelets/layout/appFooter.xhtml"
-                overwrite="true"/>
-        </then>
-      </if>
-    </sequential>
-    
-    <war destfile="${target.dir}/temp/nbia-ear/nbia.war"
-         compress="false" update="true"
-         webxml="${target.dir}/temp/nbia-war/WEB-INF/web.xml" >
-      <fileset dir="${target.dir}/temp/nbia-war">
-        <include name="*/**" />
-      </fileset>
-    </war>
-
-    <ear compress="false" update="true"
-         destfile="${nbia-web.dist.dir}/nbia.ear"
-         appxml="${target.dir}/temp/nbia-ear/META-INF/application.xml">
-
-      <fileset dir="${target.dir}/temp/nbia-ear">
-        <include name="*/**" />
-      </fileset>
-    </ear>
-   	</target>
+<target name="-branding">
+		<!-- Clean up working area -->
+		<delete dir="${target.dir}/temp/nbia-ear"/>
+		<delete dir="${target.dir}/temp/nbia-war"/>
+		<!-- Make working directories -->
+		<mkdir dir="${target.dir}/temp/nbia-ear"/>
+		<mkdir dir="${target.dir}/temp/nbia-war"/>
+		<!-- Extract required archives -->
+		<unzip src="${nbia-web.dist.dir}/nbia.ear" dest="${target.dir}/temp/nbia-ear"/>
+		<unzip src="${target.dir}/temp/nbia-ear/nbia.war" dest="${target.dir}/temp/nbia-war"/>
+		<property name="webapp.dir.path" value="${target.dir}/temp/nbia-war"/>
+		<sequential>
+			<!--   add cancer center logo header if necessary -->
+			<if>
+				<or>
+					<not>
+						<isset property="cancer.center.logo"/>
+					</not>
+					<equals arg1="${common.resources.dir}/branding/${cancer.center.logo}" arg2=""/>
+				</or>
+				<then>
+					<echo>No Cancer Center logo specified.  Substituting CCLOGO with empty string.</echo>
+				</then>
+				<else>
+					<basename property="cc.logo.filename" file="${common.resources.dir}/branding/${cancer.center.logo}"/>
+					<copy file="${common.resources.dir}/branding/${cancer.center.logo}" tofile="${webapp.dir.path}/images/${cc.logo.filename}"/>
+					<!-- in case no background image provided -->
+					<if>
+						<or>
+							<not>
+								<isset property="cancer.center.background"/>
+							</not>
+							<equals arg1="${common.resources.dir}/branding/${cancer.center.background}" arg2=""/>
+						</or>
+						<then>
+							<property name="cancer.center.background" value="whitebg.jpg"/>
+							<basename property="cc.bgimage.filename" file="${common.resources.dir}/branding/${cancer.center.background}"/>
+						</then>
+						<else>
+							<basename property="cc.bgimage.filename" file="${common.resources.dir}/branding/${cancer.center.background}"/>
+							<copy file="${common.resources.dir}/branding/${cancer.center.background}" tofile="${webapp.dir.path}/images/${cc.bgimage.filename}"/>
+						</else>
+					</if>
+					<basename property="cc.bgimage.filename" file="${common.resources.dir}/branding/${cancer.center.background}"/>
+					<loadfile property="cc.logo.header" srcFile="${webapp.dir.path}/WEB-INF/facelets/layout/ccHeader.xhtml">
+						<filterchain>
+							<expandproperties/>
+						</filterchain>
+					</loadfile>
+					<echo file="${webapp.dir.path}/WEB-INF/facelets/layout/nciHeader.xhtml" append="false">${cc.logo.header}</echo>
+				</else>
+			</if>
+			<!-- end of external cancer center logo header  -->
+			<if>
+				<and>
+					<not>
+						<equals arg1="${common.resources.dir}/branding/${branding.left.submenu.quicklinks.path}" arg2=""/>
+					</not>
+					<isset property="branding.left.submenu.quicklinks.path"/>
+				</and>
+				<then>
+					<copy file="${common.resources.dir}/branding/${branding.left.submenu.quicklinks.path}" tofile="${webapp.dir.path}/WEB-INF/facelets/layout/quickLinks.xhtml" overwrite="true"/>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${common.resources.dir}/branding/${branding.welcome.image.path}" arg2=""/>
+					</not>
+					<isset property="branding.welcome.image.path"/>
+				</and>
+				<then>
+					<copy file="${common.resources.dir}/branding/${branding.welcome.image.path}" tofile="${webapp.dir.path}/images/bannerHome.gif" overwrite="true"/>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${common.resources.dir}/branding/${branding.welcome.text.path}" arg2=""/>
+					</not>
+					<isset property="branding.welcome.text.path"/>
+				</and>
+				<then>
+					<copy file="${common.resources.dir}/branding/${branding.welcome.text.path}" tofile="${webapp.dir.path}/WEB-INF/facelets/welcomeText.xhtml" overwrite="true"/>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${common.resources.dir}/branding/${branding.welcome.title.path}" arg2=""/>
+					</not>
+					<isset property="branding.welcome.title.path"/>
+				</and>
+				<then>
+					<copy file="${common.resources.dir}/branding/${branding.welcome.title.path}" tofile="${webapp.dir.path}/WEB-INF/facelets/welcomeTitle.xhtml" overwrite="true"/>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${common.resources.dir}/branding/${branding.legal.rules.path}" arg2=""/>
+					</not>
+					<isset property="branding.legal.rules.path"/>
+				</and>
+				<then>
+					<copy file="${common.resources.dir}/branding/${branding.legal.rules.path}" tofile="${webapp.dir.path}/WEB-INF/facelets/legalRules.xhtml" overwrite="true"/>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${branding.applogo.visible}" arg2=""/>
+					</not>
+					<isset property="branding.applogo.visible"/>
+				</and>
+				<then>
+					<if>
+						<equals arg1="${branding.applogo.visible}" arg2="no"/>
+						<then>
+							<copy file="${webapp.dir.path}/WEB-INF/facelets/layout/empty.xhtml" tofile="${webapp.dir.path}/WEB-INF/facelets/layout/appHeader.xhtml" overwrite="true"/>
+						</then>
+						<else>
+							<copy file="${branding.applogo.path}" tofile="${webapp.dir.path}/images/Logo-NCIA.jpg" overwrite="true"/>
+						</else>
+					</if>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${branding.footer.path}" arg2=""/>
+					</not>
+					<isset property="branding.footer.path"/>
+				</and>
+				<then>
+					<copy file="${branding.footer.path}" tofile="${webapp.dir.path}/WEB-INF/facelets/layout/appFooter.xhtml" overwrite="true"/>
+				</then>
+			</if>
+			<if>
+				<and>
+					<not>
+						<equals arg1="${branding.pdf.path}" arg2=""/>
+					</not>
+					<isset property="branding.pdf.path"/>
+				</and>
+				<then>
+					<echo file="${webapp.dir.path}/WEB-INF/classes/ncia_messages.properties" append="true">${line.separator}gov.nih.nci.ncia.pdf.location=${branding.pdf.path}
+                             ${line.separator}branding.release.note.pdf=${branding.release.note.pdf}${line.separator}branding.manual.pdf=${branding.manual.pdf}
+                             ${line.separator}branding.exam.log.pdf=${branding.exam.log.pdf}${line.separator}branding.interview.log.pdf=${branding.interview.log.pdf}
+                             ${line.separator}branding.xray.manual.pdf=${branding.xray.manual.pdf}
+                           </echo>
+				</then>
+			</if>
+		</sequential>
+		<war destfile="${target.dir}/temp/nbia-ear/nbia.war" compress="false" update="true" webxml="${target.dir}/temp/nbia-war/WEB-INF/web.xml">
+			<fileset dir="${target.dir}/temp/nbia-war">
+				<include name="*/**"/>
+			</fileset>
+		</war>
+		<ear compress="false" update="true" destfile="${nbia-web.dist.dir}/nbia.ear" appxml="${target.dir}/temp/nbia-ear/META-INF/application.xml">
+			<fileset dir="${target.dir}/temp/nbia-ear">
+				<include name="*/**"/>
+			</fileset>
+		</ear>
+	</target>
 	
 	<!--target name="build:nbia-grid" depends="init, build:ncia-core-grid"-->
 	<target name="build:nbia-grid" depends="init">
@@ -1604,5 +1603,20 @@ java -Xmx1024m -cp xml-apis-1.0.b2.jar -Djava.ext.dirs="${jai.classpath};%JAVA_H
 	
    <target name="nbia:runUtility" description="run the utility to correct db" depends="build:nbia-ctp">	
 	 <java jar="${nbia-ctp.dist.dir}/nbiaDatabaseUpdator.jar" fork="true"/>
-   </target>	
+   </target>
+   
+   <target name="dist:solr">
+       <copy todir="${solr.dist.dir}">
+         <fileset dir="${common.dir}/resources/solr/">
+           <include name="**/*"/>
+         </fileset>
+       </copy>
+   </target>
+      
+   <target name="build:nbia-api" depends="init,
+	                   build:nbia-domain,
+		           build:nbia-dao">			
+		<ant inheritAll="false" inheritRefs="false" antfile="${nbia.build.file}" target="${nbia-api.build.target}" dir="${nbia-api.base.dir}"/>
+   </target>   
+
 </project>

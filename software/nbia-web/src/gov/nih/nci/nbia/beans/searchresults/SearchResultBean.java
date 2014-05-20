@@ -12,6 +12,7 @@ import gov.nih.nci.nbia.beans.BeanManager;
 import gov.nih.nci.nbia.beans.savedquery.SavedQueryBean;
 import gov.nih.nci.nbia.beans.searchform.SearchWorkflowBean;
 import gov.nih.nci.nbia.beans.security.SecurityBean;
+import gov.nih.nci.nbia.dto.QcSearchResultDTO;
 import gov.nih.nci.nbia.exception.DuplicateQueryException;
 import gov.nih.nci.nbia.query.DICOMQuery;
 import gov.nih.nci.nbia.querystorage.QueryStorageManager;
@@ -26,6 +27,8 @@ import gov.nih.nci.ncia.search.NBIANode;
 import gov.nih.nci.ncia.search.PatientSearchResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
@@ -60,7 +63,17 @@ public class SearchResultBean {
 	 * element in the list matches up with a "patient results table".
 	 */
 	public List<NodeTableWrapper> getNodeTablesWrappers() {
-		return nodeTableWrappers;
+		if (nodeTableWrappers == null ) {
+			return new ArrayList<NodeTableWrapper>(1);
+		} else {
+			if (!oldSort.equals(sortColumnName) ||
+	                oldAscending != ascending) {
+	             sort();
+	             oldSort = sortColumnName;
+	             oldAscending = ascending;
+	        }
+			return nodeTableWrappers;
+		}
 	}
 		
 	
@@ -69,7 +82,7 @@ public class SearchResultBean {
 	 * ISPY.  Everything else should iterate over the node table wrappers.
 	 */
 	public List<PatientResultWrapper> getPatientResults() {
-		return nodeTableWrappers.get(0).getPatients();		
+		return nodeTableWrappers.get(0).getPatients(); 		
 	}
 
 	
@@ -101,6 +114,8 @@ public class SearchResultBean {
 	 * <P>This is only for synchronous searches (ispy and dynamic search)
 	 */
 	public void setPatientResults(List<PatientSearchResult> results) {
+		// set text to false so solr search does not interfere with anything else
+		isTextResult=false;
 		if (results != null) {
 			List<PatientResultWrapper> patientResultsWrapperList = new ArrayList<PatientResultWrapper>();
 			for(PatientSearchResult result : results) {
@@ -175,13 +190,13 @@ public class SearchResultBean {
 		logger.debug("query name is: " + queryName);
 
 		SearchWorkflowBean swb = BeanManager.getSearchWorkflowBean();
-		String queryNameText = "MAINbody:dataForm:saveQueryView:queryName";
+		String queryNameText = "MAINbody:searchMenuForm:saveQueryView:queryName";
 
 		// Check to see if the query is being edited, if so, this will be
 		// performed
 		// when the user wants to update the query
 		if (swb.isEditingSavedQuery()) {
-			queryNameText = "MAINbody:dataForm:saveQueryView:newQueryName";
+			queryNameText = "MAINbody:searchMenuForm:saveQueryView:newDataQuery";
 
 			if (updateQuery) {
 				QueryStorageManager qManager = (QueryStorageManager)SpringApplicationContext.getBean("queryStorageManager");
@@ -324,6 +339,9 @@ public class SearchResultBean {
 	 */
 	private Boolean updateQuery = true;
 
+	
+	
+	private boolean isTextResult=false;
 
 	/**
      * Each object in this collection represents the gui state for the search
@@ -411,4 +429,138 @@ public class SearchResultBean {
 			System.out.println("PatientSearchResults error:"+result.getSearchError() + " - Node " + result.getNode().getDisplayName());
 		}   
     }
+    //for sorting
+    private static final String collectionNameHeader = "Collection ID";
+    private static final String patientHeader = "Subject ID";
+    private static final String matchedStudyHeader = "Matched Studies";
+    private static final String totalStudyHeader = "Total Studies";
+    private static final String matchedSeriesHeader = "Matched Series";
+    private static final String totalSeriesHeader = "Total Series";
+    private static final String hitHeader = "Hit";
+
+    private String sortColumnName= "Subject ID";
+    private boolean ascending = true;
+    // we only want to resort if the oder or column has changed.
+    private String oldSort = sortColumnName;
+    private boolean oldAscending = ascending;
+
+   // ----------------
+    /**
+     * Gets the sortColumnName column.
+     *
+     * @return column to sortColumnName
+     */
+    public String getSortColumnName() {
+        return sortColumnName;
+    }
+
+    /**
+     * Sets the sortColumnName column
+     *
+     * @param sortColumnName column to sortColumnName
+     */
+    public void setSortColumnName(String sortColumnName) {
+    	 oldSort = this.sortColumnName;
+         this.sortColumnName = sortColumnName;
+
+    }
+
+    /**
+     * Is the sortColumnName ascending.
+     *
+     * @return true if the ascending sortColumnName otherwise false.
+     */
+    public boolean isAscending() {
+        return ascending;
+    }
+
+    /**
+     * Set sortColumnName type.
+     *
+     * @param ascending true for ascending sortColumnName, false for desending sortColumnName.
+     */
+    public void setAscending(boolean ascending) {
+    	 oldAscending = this.ascending;
+        this.ascending = ascending;
+    }
+
+    private void sort() {
+        Comparator comparator = new Comparator() {
+            public int compare(Object o1, Object o2) {
+            	PatientResultWrapper c1 = (PatientResultWrapper) o1;
+            	PatientResultWrapper c2 = (PatientResultWrapper) o2;
+
+                if (sortColumnName == null) {
+                    return 0;
+                }
+                if (sortColumnName.equals(collectionNameHeader)) {
+                		return compareObject(
+                                c1.getPatient().getProject().compareTo(c2.getPatient().getProject()),
+                                c2.getPatient().getProject().compareTo(c1.getPatient().getProject()));
+                }
+                else if (sortColumnName.equals(patientHeader)) {
+                    return compareObject(c1.getPatient().getSubjectId().compareTo(c2.getPatient().getSubjectId()),
+                        c2.getPatient().getSubjectId().compareTo(c1.getPatient().getSubjectId()));
+                }
+                else if (sortColumnName.equals(matchedStudyHeader)) {
+                	return compareObject(c1.getStudyCounts().compareTo(c2.getStudyCounts()),
+                		c2.getStudyCounts().compareTo(c1.getStudyCounts()));
+                }
+                else if (sortColumnName.equals(matchedSeriesHeader)) {
+                	return compareObject(c1.getSeriesCounts().compareTo(c2.getSeriesCounts()),
+                		c2.getSeriesCounts().compareTo(c1.getSeriesCounts()));
+                }else if (sortColumnName.equals(totalStudyHeader)) {
+                	return compareObject(c1.getPatient().getTotalNumberOfStudies().compareTo(c2.getPatient().getTotalNumberOfStudies()),
+                		c2.getPatient().getTotalNumberOfStudies().compareTo(c1.getPatient().getTotalNumberOfStudies()));
+                }else if (sortColumnName.equals(totalSeriesHeader)) {
+                	return compareObject(c1.getPatient().getTotalNumberOfSeries().compareTo(c2.getPatient().getTotalNumberOfSeries()),
+                		c2.getPatient().getTotalNumberOfSeries().compareTo(c1.getPatient().getTotalNumberOfSeries()));
+               }else {
+                	return 0;
+                }
+            }
+        };
+        Collections.sort(nodeTableWrappers.get(0).getPatients(), comparator);
+    }
+
+    private int compareObject(int result1, int result2){
+    	return ascending ? result1 : result2;
+    }
+
+	public String getCollectionNameHeader() {
+		return collectionNameHeader;
+	}
+
+	public String getPatientHeader() {
+		return patientHeader;
+	}
+
+	public String getMatchedStudyHeader() {
+		return matchedStudyHeader;
+	}
+
+	public String getTotalStudyHeader() {
+		return totalStudyHeader;
+	}
+
+	public String getMatchedSeriesHeader() {
+		return matchedSeriesHeader;
+	}
+
+	public String getTotalSeriesHeader() {
+		return totalSeriesHeader;
+	}
+
+	public boolean isTextResult() {
+		return isTextResult;
+	}
+
+	public void setTextResult(boolean isTextResult) {
+		this.isTextResult = isTextResult;
+	}
+
+
+	public String getHitHeader() {
+		return hitHeader;
+	}
 }
