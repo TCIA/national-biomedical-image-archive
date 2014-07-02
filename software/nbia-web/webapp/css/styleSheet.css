@@ -48,7 +48,7 @@ a:hover {
 h2 {
   font-weight: bold; 
   font-size: 1.6em; 
-  color: #706f5d; 
+  color: #5c5c5c; 
   text-align: center
 }
 
@@ -65,41 +65,12 @@ p {
 
 /* ********************************* BEGIN MAIN LAYOUT RULES ***************************************/
 /*.hdrBG {
-  /* background-color: #a90101 */
+  background-color: #a90101
 }*/
 
 .subhdrBG {
   background-color: #475b82
 }
-
-/** Additions for TCIA **/
-.header {
-  background-color: #ffffff;
-  width: 960px;
-  height: 114px;
-  margin-right: auto;
-  background-image: url("../images/header-background.png");
-  background-repeat: no-repeat;
-  background-position: left top;
-  position: relative;
-  display: block;
-}
-.header a.NciLogo{
-  position: absolute;
-  top: 4px;
-  right: 60px;
-}
-.header a.TciaLogo{
-  position: absolute;
-  top: 42px;
-  left: 5px;
-}
-.header a.FrederickLogo{
-  position: absolute;
-  top: 42px;
-  left: 290px;
-}
-/** End additions for TCIA **/
 
 .ftrTable {
   padding-top: 0.4em
@@ -165,7 +136,7 @@ td.mainMenu {
   border-top: #cccccc 1px solid; 
   border-bottom: #cccccc 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif; 
-  background-color: #706f5d;
+  background-color: #5c5c5c;
 }
 
 td.mainMenuText {
@@ -174,7 +145,7 @@ td.mainMenuText {
   font-weight: bold; 
   font-size: 0.7em; 
   color: #ffffff;
-  background-color: #706f5d;
+  background-color: #4C5D87;
 }
 
 td.mainMenuItem {
@@ -275,7 +246,7 @@ td.footerMenu {
   border-top: #cccccc 1px solid; 
   border-bottom: #cccccc 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif; 
-  background-color: #706f5d
+  background-color: #5c5c5c
 }
 
 td.footerMenuItem {
@@ -283,7 +254,7 @@ td.footerMenuItem {
   padding-left: 1em; 
   font-weight: bold; 
   font-size: 0.6em; 
-  background-color: #706f5d
+  background-color: #5c5c5c
 }
 
 td.footerMenuItemOver {
@@ -307,7 +278,7 @@ td.subMenuPrimaryTitle {
   font-size: 0.6em; 
   color: #ffffff; 
   border-bottom: #cccccc 1px solid; 
-  background-color: #706f5d
+  background-color: #5c5c5c
 }
 
 td.subMenuPrimaryItems {
@@ -346,15 +317,6 @@ td.subMenuFill {
   border-right: #cccccc 1px solid
 }
 
-#APPftr {
-  text-align: center;
-  border-top: #cccccc 1px solid; 
-  border-bottom: #cccccc 1px solid;
-  color: #ffffff; 
-  background-color: #706f5d;
-  margin-left: auto; 
-  margin-right: auto;
-  font-family: arial,helvetica,verdana,sans-serif;
 /*
 a.subMenuPrimary {
   color: #FFFFFF; 
@@ -369,20 +331,20 @@ a.subMenuPrimary {
 
 
 a.subMenuPrimary:link {
-  color: #706f5d; 
+  color: #ffffff; 
   white-space: nowrap; 
   text-decoration: none
   
 }
 
 a.subMenuPrimary:visited {
-  color: #706f5d; 
+  color: #ffffff; 
   white-space: nowrap; 
   text-decoration: none
 }
 
 a.subMenuPrimary:active {
-  color: #706f5d; 
+  color: #ffffff; 
   white-space: nowrap; 
   text-decoration: none
 }
@@ -460,10 +422,10 @@ a.footerMenuLink:hover {
   font-family:arial,helvetica,verdana,sans-serif;
   background-color:#F4F4F5;
   color:#000000;
-  border-right:1px solid #706f5d;
-  border-bottom:1px solid #706f5d;
+  border-right:1px solid #5C5C5C;
+  border-bottom:1px solid #5C5C5C;
   text-align:left;
-  border-left: 1px solid #706f5d;
+  border-left: 1px solid #5C5C5C;
 }
 
 .formTitle{
@@ -488,17 +450,17 @@ a.footerMenuLink:hover {
 td.formField{ /* for the cell that contains the form elements */
   font-family:arial,helvetica,verdana,sans-serif;
   color:#000000; /* constant: black */
-  border-right:1px solid #706f5d; /* constant: dark gray */
-  border-bottom:1px solid #706f5d; /* constant: dark gray */
+  border-right:1px solid #5C5C5C; /* constant: dark gray */
+  border-bottom:1px solid #5C5C5C; /* constant: dark gray */
   background-color:#F4F4F5; /* constant: light gray */
 }
 
 input.formField {
-  border-right: #706f5d 1px solid;
-  border-top: #706f5d 1px solid; 
+  border-right: #5c5c5c 1px solid;
+  border-top: #5c5c5c 1px solid; 
   font-size: 1em; 
-  border-left: #706f5d 1px solid; 
-  border-bottom: #706f5d 1px solid; 
+  border-left: #5c5c5c 1px solid; 
+  border-bottom: #5c5c5c 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif
 }
 
@@ -506,8 +468,8 @@ td.formFieldWhite {
   font-family:arial,helvetica,verdana,sans-serif;
   font-size:0.7em;
   color:#000000; /* constant: black */
-  border-right:1px solid #706f5d; /* constant: dark gray */
-  border-bottom:1px solid #706f5d; /* constant: dark gray */
+  border-right:1px solid #5C5C5C; /* constant: dark gray */
+  border-bottom:1px solid #5C5C5C; /* constant: dark gray */
   background-color:#FFFFFF; /* constant: light gray */
 }
 
@@ -521,10 +483,10 @@ td.formFieldLogin {
 
 
 input.actionButton {
-  border-right: #706f5d 2px solid; 
+  border-right: #5c5c5c 2px solid; 
   border-top: #cccccc 1px solid; 
   border-left: #cccccc 1px solid; 
-  border-bottom: #706f5d 2px solid
+  border-bottom: #5c5c5c 2px solid
 }
 .formMessage {
   color: #000000; 
@@ -534,27 +496,23 @@ input.actionButton {
 
 .dataTablePrimaryLabel {
   text-align: left;
-  border-right: #706f5d 1px solid; 
-  border-top: #706f5d 1px solid; 
   font-weight: bold; 
-  /*font-size: 0.8em;*/
-  border-left: #706f5d 1px solid; 
   color: #ffffff; 
   font-family: arial,helvetica,verdana,sans-serif; 
-  background-color: #706f5d
+  background-color: #6E81A6
 }
 
 .dataTableHeader {
-  border-right: #706f5d 1px solid; 
+  border-right: #5c5c5c 1px solid; 
   font-weight: bold; 
   color: #000000; 
-  border-bottom: #706f5d 1px solid; 
+  border-bottom: #5c5c5c 1px solid; 
   font-family: arial,helvetica,verdana,sans-serif; 
   background-color: #cccccc
 }
 .dataTable {
-  border-top: #706f5d 1px solid; 
-  border-left: #706f5d 1px solid; 
+  border-top: #5c5c5c 1px solid; 
+  border-left: #5c5c5c 1px solid; 
   color: #000000; 
   font-family: arial,helvetica,verdana,sans-serif
 }
@@ -614,8 +572,8 @@ input.actionButton {
 
 .seriesDataCell {
   padding-left: 3px;
-  border-right: #706f5d 1px solid; 
-  border-bottom: #706f5d 1px solid;     
+  border-right: #5c5c5c 1px solid; 
+  border-bottom: #5c5c5c 1px solid;     
 }
 .dataRowLight {
   color: #000000; 
@@ -626,24 +584,24 @@ input.actionButton {
   background-color: #f4f4f5
 }
 .dicomDataRowLight {
-  border-right: #706f5d 1px solid;
-  border-bottom: #706f5d 1px solid; 
+  border-right: #5c5c5c 1px solid;
+  border-bottom: #5c5c5c 1px solid; 
   color: #000000; 
   background-color: #ffffff; 
   padding-left: 1.2em;
 }
 .dicomDataRowDark {
-  border-right: #706f5d 1px solid; 
-  border-bottom: #706f5d 1px solid; 
+  border-right: #5c5c5c 1px solid; 
+  border-bottom: #5c5c5c 1px solid; 
   color: #000000; 
   background-color: #f4f4f5; 
   padding-left: 1.2em;
 }
 .dataCellText {
-  border-top: #706f5d 1px solid; 
-  border-left: #706f5d 1px solid; 
-  border-right: #706f5d 1px solid;
-  border-bottom: #706f5d 1px solid;
+  border-top: #5c5c5c 1px solid; 
+  border-left: #5c5c5c 1px solid; 
+  border-right: #5c5c5c 1px solid;
+  border-bottom: #5c5c5c 1px solid;
   text-align: left
 }
 
@@ -676,7 +634,7 @@ table.contentPageII {
   font-weight: bold; 
   font-size: 1em; 
   color: #ffffff; 
-  background-color: #706f5d
+  background-color: #5c5c5c
 }
 
 .sidebarContent {
@@ -772,8 +730,8 @@ table.contentPageII {
   padding-left:0.8em;
   background-color:#6E81A6;
   color:#FFFFFF;
-  border-right: #706f5d 1px solid; 
-  border-bottom: #706f5d 1px solid;     
+  border-right: #5c5c5c 1px solid; 
+  border-bottom: #5c5c5c 1px solid;     
 }
 .contentPageII {
   color: #000000; 
@@ -821,7 +779,7 @@ table.contentPageII {
 }
 
 .emptyDataCell {
-  background-color: #706f5d
+  background-color: #5c5c5c
 }
 
 
@@ -915,7 +873,7 @@ table.contentPageII {
 .submissionReportTitle {
   margin-top: 30px;
   margin-bottom: 30px;
-  color:#706f5d;
+  color:#5C5C5C;
   font-size:1.6em;
   font-weight:bold;
 }
@@ -933,7 +891,7 @@ table.contentPageII {
   padding-left:0.8em;
   background-color:#6E81A6;
   color:#FFFFFF;
-  border: #706f5d 1px solid;    
+  border: #5c5c5c 1px solid;    
 }
 /* ********************************* END SUBMISSION REPORTS RULES ***************************************/
 
@@ -949,8 +907,8 @@ table.contentPageII {
 .submissionView th {
 	font-family: arial, helvetica, verdana, sans-serif;
 	padding: 3px 3px 3px 3px;
-	color: #706f5d;
-	/*background-color: #706f5d;*/
+	color: #5C5C5C;
+	/*background-color: #5C5C5C;*/
 	background: white url(../images/shadeactive.gif) top left repeat-x;
 	text-align: left;
 }
