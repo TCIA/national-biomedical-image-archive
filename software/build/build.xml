@@ -888,6 +888,7 @@ $HeadURL$
   </target>
 
   <target name="dist:tools:retrieve:sync-gts">
+    <!--
     <if>
       <not>
         <available file="${download.dir}/${sync-gts.binaries.file}"/>
@@ -918,6 +919,7 @@ $HeadURL$
     <copy todir="${sync-gts.dist.dir}/cagrid-target">
       <fileset dir="${cagrid.target.co.dir}"/>
     </copy>
+    -->
   </target>
 
   <!-- Wrapper target that downloads all required binaries from Common Tools Repository -->

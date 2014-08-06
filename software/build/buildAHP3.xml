@@ -1046,6 +1046,7 @@ java -Xmx1024m -cp xml-apis-1.0.b2.jar -Djava.ext.dirs="${jai.classpath};%JAVA_H
 		</zip>
 	</target>
 	<target name="dist:tools:retrieve:sync-gts">
+		<!--
 		<if>
 			<not>
 				<available file="${download.dir}/${sync-gts.binaries.file}" />
@@ -1071,6 +1072,7 @@ java -Xmx1024m -cp xml-apis-1.0.b2.jar -Djava.ext.dirs="${jai.classpath};%JAVA_H
 		<copy todir="${sync-gts.dist.dir}/cagrid-target">
 			<fileset dir="${cagrid.target.co.dir}" />
 		</copy>
+		-->
 	</target>
 	
 	<!--- build Secured nciaCoreGrid -->
