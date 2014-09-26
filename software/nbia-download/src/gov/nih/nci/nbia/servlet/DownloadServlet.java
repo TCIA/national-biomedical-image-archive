@@ -123,8 +123,10 @@ public class DownloadServlet extends HttpServlet {
 
             logger.info("images size: " + imageResults.size() + " anno size: " + annoResults.size());
 
-            sendImagesData(imageResults, tos);
+            // Send the annotations first, to make sure that they arrive safely before transmitting the DICOM files,
+            // since the download manager only tracks successfully received DICOM files. - lrt
             sendAnnotationData(annoResults, tos);
+            sendImagesData(imageResults, tos);
 
             logger.info("total time to send  files are " + (System.currentTimeMillis() - start)/1000 + " ms.");
         }
