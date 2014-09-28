@@ -90,19 +90,19 @@ public class StartupServlet extends HttpServlet {
        JobDetail  latestCurationDateJobDetail = new JobDetail("LatestCurationDate",
                                                               Scheduler.DEFAULT_GROUP,
                                                               LatestCurationDateJob.class);
-       
-       Integer hrs = Integer.valueOf(NCIAConfig.getDiscoverPeriodInHrs());
-       Trigger nodeLookupTrigger = TriggerUtils.makeHourlyTrigger(hrs);
-       
-       nodeLookupTrigger.setName("Trigger for Node Lookup");
-       JobDetail nodeLookupJobDetail = new JobDetail("NodeLookup",
-                                                     Scheduler.DEFAULT_GROUP,
-                                                     NodeLookupJob.class);
-       
-       // wait an 10 min before starting solrUpdates
-       long startTime = System.currentTimeMillis() + 600000L;
+
+       //Integer hrs = Integer.valueOf(NCIAConfig.getDiscoverPeriodInHrs());
+       //Trigger nodeLookupTrigger = TriggerUtils.makeHourlyTrigger(hrs);
+
+       //nodeLookupTrigger.setName("Trigger for Node Lookup");
+       //JobDetail nodeLookupJobDetail = new JobDetail("NodeLookup",
+       //                                              Scheduler.DEFAULT_GROUP,
+       //                                              NodeLookupJob.class);
+
+       // wait an 1 min before starting solrUpdates
+       long startTime = System.currentTimeMillis() + 6000L;
        Long interval = null;
-       
+
        try {
 		interval = Long.valueOf(NCIAConfig.getSolrUpdateInterval());
 	   } catch (Exception e1) {
@@ -110,15 +110,15 @@ public class StartupServlet extends HttpServlet {
 		    System.out.println("unable to read solr interval, defaulting to one hour");
 	     	e1.printStackTrace();
 	   }
-       
-       
+
+
        SimpleTrigger solrTrigger = new SimpleTrigger("myTrigger",
                null,
                new Date(startTime),
                null,
                SimpleTrigger.REPEAT_INDEFINITELY,
                interval * 60000L);
-       
+
        JobDetail solrUpdateJobDetail = new JobDetail("SolrUpdate",
                Scheduler.DEFAULT_GROUP,
                SolrUpdateJob.class);
@@ -128,7 +128,7 @@ public class StartupServlet extends HttpServlet {
             SchedulerFactory sf = new StdSchedulerFactory();
 
             Scheduler scheduler = sf.getScheduler();
-            // my job goes first!
+            // my jobs  first!
             scheduler.scheduleJob(solrUpdateJobDetail, solrTrigger);
             
             //Job 1 - Latest Curation Date
@@ -138,8 +138,8 @@ public class StartupServlet extends HttpServlet {
             if(NCIAConfig.runNewDataFlagUpdate()) {
             	scheduler.scheduleJob(runNewDataFlagJobDetail, runNewDataFlagTrigger);
             }
-            
-            scheduler.scheduleJob(nodeLookupJobDetail, nodeLookupTrigger);
+
+           // scheduler.scheduleJob(nodeLookupJobDetail, nodeLookupTrigger);
 
             scheduler.start();
         } catch (SchedulerException se) {
