@@ -198,6 +198,12 @@ L-->
                 rev="latest.integration"
                 conf="compile->master;runtime"/>
 
+    <dependency org="ncicb"
+                name="nbia-remote-search"
+                rev="latest.integration"
+                conf="compile->master;runtime"/>
+
+
     <dependency org="com.ocpsoft"
                 name="ocpsoft-pretty-faces"
                 rev="1.2.6"
