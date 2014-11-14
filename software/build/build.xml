@@ -574,27 +574,34 @@ $HeadURL$
 
     <!-- crud.  dealing with cyclical dependencies between nbia-download-mgr and nbia-remote-search -->
     <!-- nimpy - this sucks sucks sucks -->
+    <!-- actually, as of NBIA 6 download manager no longer needs remote search, so remove the copying of remote search -->
+    <!-- this significantly shrinks the size of download manager dependencies -->
+    <!--
     <copy todir="${target.dir}/dist/exploded/nbia-download-manager">
       <fileset dir="${lib.dir}/nbia-remote-search/runtime">
         <include name="*.jar" />
       </fileset>
     </copy>
+    -->
     <copy todir="${target.dir}/dist/exploded/nbia-download-manager">
       <fileset dir="${lib.dir}/nbia-download-manager/runtime">
         <include name="*.jar" />
       </fileset>
     </copy>
+    <!--
     <copy todir="${target.dir}/dist/exploded/nbia-download-manager">
       <fileset dir="${target.dir}/dist/exploded/nbia-remote-search">
         <include name="*.jar"/>
       </fileset>
     </copy>
+    -->
 
     <echoproperties prefix="jar-signing"/>
     <if>
       <equals arg1="${jar-signing.execution.time}" arg2="build"/>
       <then>
-        <unsignjar jar="${target.dir}/dist/exploded/nbia-download-manager/bouncycastle-jdk1.3_1.25.jar"/>
+        <!-- part of remote search, which is no longer needed
+	<unsignjar jar="${target.dir}/dist/exploded/nbia-download-manager/bouncycastle-jdk1.3_1.25.jar"/> -->
         <echo message="jar-signing.execution.time set to build, signing jars"/>
 
         <comma-separated-file-list directory.to.list="${target.dir}/dist/exploded/nbia-download-manager"

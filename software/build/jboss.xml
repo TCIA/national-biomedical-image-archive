@@ -333,7 +333,9 @@ L-->
         <copy file="${temp.dir}/nbia-war/NBIADownloadManager.jar"
               todir="${temp.download-mgr-dependencies}"/>
 
-        <unsignjar jar="${temp.download-mgr-dependencies}/bouncycastle-jdk1.3_1.25.jar"/>
+        <!-- No longer needed, since remote search in download manager dropped
+	<unsignjar jar="${temp.download-mgr-dependencies}/bouncycastle-jdk1.3_1.25.jar"/>
+	-->
 
         <comma-separated-file-list directory.to.list="${temp.download-mgr-dependencies}"
                                    property.name.to.set="jar-signing.jar.list"/>
