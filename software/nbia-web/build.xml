@@ -174,6 +174,9 @@ L-->
       </fileset>
     </copy>
 
+<!-- Download Manager no longer uses Remote Search, so remove the copying 
+       of its jar files into the download-mgr-dependencies directory -->
+<!--
     <copy todir="${webapp.dir}/download-mgr-dependencies">
       <fileset dir="${download.mgr.target.dir}/../nbia-remote-search">
         <include name="*.jar"/>
@@ -188,7 +191,7 @@ L-->
       </fileset>
     </copy>
   </target>
-
+-->
   <target name="compile" depends="ivy-compile">
     <javac srcdir="${src.java.dir}" destdir="${web.classes.dir}" debug="true">
       <classpath refid="project.compile.classpath" />
