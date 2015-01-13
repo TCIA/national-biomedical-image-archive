@@ -26,7 +26,7 @@ L--%>
           <div class="header_content-inner">
             <div class="header_content-content clearfix">
               <div class="header_logo header_logo_image">
-                <a href="http://www-dev.cancerimagingarchive.net/tcia"
+                <a href="http://www.cancerimagingarchive.net"
                   title="The Cancer Imaging Archive (TCIA)" class="tb-image-logo">
                   <img src="images/tcia/tcia_logo_dark_sml.png" width="200"
                     alt="The Cancer Imaging Archive (TCIA)"
@@ -275,7 +275,7 @@ L--%>
                 <span class="text">&copy; 2014 TCIA&nbsp;|&nbsp;
                   <a href="http://creativecommons.org/licenses/by/3.0/" class="themeblvd-lightbox mfp-iframe">Site License</a> 
                   &nbsp;|&nbsp;Funded by&nbsp;<a href="http://frederick.cancer.gov" target="_BLANK">Frederick Nat. Lab for Cancer Research</a>
-                  <br/>Background photo courtesy of Siemens Healthcare</span>
+                  <br/>Background photo courtesy of Dr. Christopher Nimsky, the University of Marburg, and Siemens Healthcare</span>
                 <span class="menu">
                   <ul id="footer-menu" class="menu">
                     <li id="menu-item-188"
