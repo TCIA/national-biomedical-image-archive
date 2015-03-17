@@ -8405,6 +8405,7 @@ $HeadURL: https://gforge.nci.nih.gov/svnroot/automation/trunk/software/utils/bda
 						keystore="@{jar-signing.keystore.abs-location}"
 						storepass="@{jar-signing.keystore.password}"
 						keypass="@{jar-signing.keystore.password}"
+            tsaurl="https://timestamp.geotrust.com/tsa" 
 						lazy="true">
 						<path>
 							<fileset dir="${jars.dir.working}" includes="@{jar.file.name}" />

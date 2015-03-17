@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- JNLP File  -->
+<!-- Original codebase was "$$codebase" -->
 
 <jnlp spec="1.0+"
-      codebase="$$codebase">
+      codebase="https://tcia.wustl.edu/ncia">
  
   <information>
     <title>NBIA Download Manager</title>
