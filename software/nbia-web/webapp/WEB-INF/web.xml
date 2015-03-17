@@ -64,6 +64,15 @@ L-->
     <param-name>com.icesoft.faces.connectionTimeout</param-name>
     <param-value>1000000</param-value>
   </context-param>
+  <!-- added by lrt to deal with long running adds to the shopping cart -->
+  <context-param>
+    <param-name>com.icesoft.faces.blockingConnectionTimeout</param-name>
+    <param-value>1000000</param-value>
+  </context-param>
+  <context-param>
+    <param-name>com.icesoft.faces.heartbeatTimeout</param-name>
+    <param-value>500000</param-value>
+  </context-param>
   <!--  required or else popup windows will make icefaces unresponsive -->
   <context-param>
     <param-name>com.icesoft.faces.concurrentDOMViews</param-name>
