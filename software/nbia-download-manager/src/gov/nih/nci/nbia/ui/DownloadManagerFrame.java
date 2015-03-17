@@ -168,6 +168,7 @@ public class DownloadManagerFrame extends JFrame implements Observer {
         setJMenuBar(menuBar);
     }
 
+	// TODO: Change the hardcoded URL to something that comes from a config file or property.
     private class OpenUrlAction implements ActionListener {
         @Override public void actionPerformed(ActionEvent e) {
             // open(uri);
