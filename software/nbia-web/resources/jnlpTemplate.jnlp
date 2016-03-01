@@ -3,7 +3,7 @@
 <!-- Original codebase was "$$codebase" -->
 
 <jnlp spec="1.0+"
-      codebase="https://tcia.wustl.edu/ncia">
+      codebase="https://tcia.uams.edu/ncia">
  
   <information>
     <title>NBIA Download Manager</title>
