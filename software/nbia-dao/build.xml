@@ -17,7 +17,7 @@ L-->
 
   <property name="common.dir" value="${basedir}/../" />
   <property name="global.ivy.settings.file" location="${common.dir}/common/ivysettings.xml" />
-
+  <property name="dicomsupport.lib" location="${common.dir}/common/resources/dicomapi/" />
   <property name="project.lib.dir" value="${common.dir}/target/lib/${nbia-dao}" />
 
   <property name="assembly.dir" value="${basedir}/assembly" />
@@ -72,12 +72,17 @@ L-->
   </target>
 
   <target name="compile" depends="-init, ivy-compile" description="Compiles all java classes">
+    <copy todir="${project.lib.dir}/compile">
+      <fileset dir="${dicomsupport.lib}">
+    </fileset>
+    </copy>
     <echo message="**********************************" />
     <echo message="***   Compiling Java Classes   ***" />
     <echo message="**********************************" />
 
     <javac destdir="${assembly.classes.dir}" debug="true">
       <src path="${src.java.dir}" />
+       <compilerarg value="-XDignore.symbol.file" />
       <classpath>
         <fileset dir="${project.lib.dir}/compile">
           <include name="*.jar" />
@@ -105,6 +110,7 @@ L-->
       </fileset>
 
     </copy>
+    <rename src="${assembly.classes.dir}/NCIA.csm.new.hibernate.cfg.xml" dest="${assembly.classes.dir}/${application.context.name}.csm.new.hibernate.cfg.xml"/>
   </target>
 
 

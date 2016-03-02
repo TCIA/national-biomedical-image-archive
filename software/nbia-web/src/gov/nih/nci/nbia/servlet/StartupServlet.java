@@ -32,7 +32,6 @@
 package gov.nih.nci.nbia.servlet;
 
 import gov.nih.nci.nbia.factories.ApplicationFactory;
-import gov.nih.nci.nbia.jobs.NodeLookupJob;
 import gov.nih.nci.nbia.newresults.LatestCurationDateJob;
 import gov.nih.nci.nbia.newresults.NewResultsProcessor;
 import gov.nih.nci.nbia.util.NCIAConfig;
@@ -49,6 +48,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.StdSchedulerFactory;
 import  gov.nih.nci.nbia.textsupport.SolrUpdateJob;
+import gov.nih.nci.nbia.workflowsupport.WorkflowUpdateJob;
 
 
 public class StartupServlet extends HttpServlet {
@@ -65,7 +65,7 @@ public class StartupServlet extends HttpServlet {
         Date latestCurationDate = null;
         try {
             latestCurationDate = new LatestCurationDateJob().getLatestCurationDate();
-        } 
+        }
         catch (Exception e) {
             latestCurationDate = new Date();
         }
@@ -81,7 +81,7 @@ public class StartupServlet extends HttpServlet {
     	   	TriggerUtils.makeDailyTrigger(NCIAConfig.getHourToRunNewDataFlagUpdate(), 0);
         runNewDataFlagTrigger.setName("Daily Trigger for New Results Flag Update");
        JobDetail runNewDataFlagJobDetail = new JobDetail("NewDataFlag",
-				                                         Scheduler.DEFAULT_GROUP, 
+				                                         Scheduler.DEFAULT_GROUP,
 				                                         NewResultsProcessor.class);
 
        // Schedule it to get updated daliy at midnight
@@ -90,19 +90,19 @@ public class StartupServlet extends HttpServlet {
        JobDetail  latestCurationDateJobDetail = new JobDetail("LatestCurationDate",
                                                               Scheduler.DEFAULT_GROUP,
                                                               LatestCurationDateJob.class);
-       
-       Integer hrs = Integer.valueOf(NCIAConfig.getDiscoverPeriodInHrs());
-       Trigger nodeLookupTrigger = TriggerUtils.makeHourlyTrigger(hrs);
-       
-       nodeLookupTrigger.setName("Trigger for Node Lookup");
-       JobDetail nodeLookupJobDetail = new JobDetail("NodeLookup",
-                                                     Scheduler.DEFAULT_GROUP,
-                                                     NodeLookupJob.class);
-       
-       // wait an 10 min before starting solrUpdates
-       long startTime = System.currentTimeMillis() + 600000L;
+
+       //Integer hrs = Integer.valueOf(NCIAConfig.getDiscoverPeriodInHrs());
+       //Trigger nodeLookupTrigger = TriggerUtils.makeHourlyTrigger(hrs);
+
+       //nodeLookupTrigger.setName("Trigger for Node Lookup");
+       //JobDetail nodeLookupJobDetail = new JobDetail("NodeLookup",
+       //                                              Scheduler.DEFAULT_GROUP,
+       //                                              NodeLookupJob.class);
+
+       // wait an 1 min before starting solrUpdates
+       long startTime = System.currentTimeMillis() + 6000L;
        Long interval = null;
-       
+
        try {
 		interval = Long.valueOf(NCIAConfig.getSolrUpdateInterval());
 	   } catch (Exception e1) {
@@ -110,27 +110,51 @@ public class StartupServlet extends HttpServlet {
 		    System.out.println("unable to read solr interval, defaulting to one hour");
 	     	e1.printStackTrace();
 	   }
-       
-       
+
+
        SimpleTrigger solrTrigger = new SimpleTrigger("myTrigger",
                null,
                new Date(startTime),
                null,
                SimpleTrigger.REPEAT_INDEFINITELY,
                interval * 60000L);
-       
+
        JobDetail solrUpdateJobDetail = new JobDetail("SolrUpdate",
                Scheduler.DEFAULT_GROUP,
                SolrUpdateJob.class);
-       
+
+       // wait an 10 min before starting workflows
+       long startTimeWorkflow = System.currentTimeMillis() + 600000L;
+       Long intervalWorkflow = null;
+
+       try {
+		intervalWorkflow = Long.valueOf(NCIAConfig.getWorkflowUpdateInterval());
+	   } catch (Exception e1) {
+		    intervalWorkflow = Long.valueOf("60");
+		    System.out.println("unable to read workflow interval, defaulting to ten minutes");
+	   }
+
+       System.out.println("Workflow interval:"+intervalWorkflow);
+       SimpleTrigger workflowTrigger = new SimpleTrigger("wTrigger",
+               null,
+               new Date(startTimeWorkflow),
+               null,
+               SimpleTrigger.REPEAT_INDEFINITELY,
+               intervalWorkflow * 60000L);
+
+       JobDetail worflowUpdateJobDetail = new JobDetail("Workflow",
+               Scheduler.DEFAULT_GROUP,
+               WorkflowUpdateJob.class);
+
+
         //Schedule the tasks...
         try {
             SchedulerFactory sf = new StdSchedulerFactory();
 
             Scheduler scheduler = sf.getScheduler();
-            // my job goes first!
+            // my jobs  first!
             scheduler.scheduleJob(solrUpdateJobDetail, solrTrigger);
-            
+            scheduler.scheduleJob(worflowUpdateJobDetail, workflowTrigger);
             //Job 1 - Latest Curation Date
             scheduler.scheduleJob(latestCurationDateJobDetail, latestCurationDateTrigger);
 
@@ -138,8 +162,8 @@ public class StartupServlet extends HttpServlet {
             if(NCIAConfig.runNewDataFlagUpdate()) {
             	scheduler.scheduleJob(runNewDataFlagJobDetail, runNewDataFlagTrigger);
             }
-            
-            scheduler.scheduleJob(nodeLookupJobDetail, nodeLookupTrigger);
+
+           // scheduler.scheduleJob(nodeLookupJobDetail, nodeLookupTrigger);
 
             scheduler.start();
         } catch (SchedulerException se) {

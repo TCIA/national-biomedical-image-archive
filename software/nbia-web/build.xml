@@ -17,12 +17,11 @@ L-->
   <!-- Properties -->
   <property name="common.dir" value="${basedir}/../" />
   
-
   <!-- directory where the compiled and configured nbia-services-commons target directory can be found -->
   <property name="commons.target.dir" value="${common.dir}/target/dist/exploded/nbia-services-commons" />
   <property name="download.mgr.target.dir" value="${common.dir}/target/dist/exploded/nbia-download-manager" />
   <property name="download.webapp.target.dir" value="${common.dir}/target/dist/exploded/nbia-download"/>
-
+  <property name="oviyam.dir" value="${common.dir}/common/resources/oviyam"/>
   <!-- The following should not need modifying -->
   <property name="src.java.dir" value="src" />
   <property name="resources.dir" value="resources" />
@@ -40,15 +39,13 @@ L-->
   
   <property name="ear.lib" value="${common.dir}/target/lib/imagedeletionmdb/runtime" />
   
-  
-  <!-- define this for unittesting.xml import -->
+    <!-- define this for unittesting.xml import -->
   <property name="classes.to.test.dir" value="${web.classes.dir}"/>
 
   <property name="web.j2ee.resources.dir" value="${resources.dir}/ear" />
 
   <property name="project.lib.dir" value="${common.dir}/target/lib/nbia-web"/>
-  <!-- <property name="remote.search.lib.dir" value="${common.dir}/target/lib/nbia-remote-search"/> -->
- <property name="common.lib.dir" location="${common.dir}/common/resources/lib" />
+  <property name="common.lib.dir" location="${common.dir}/common/resources/lib" />
   
   <!-- Paths -->
   <path id="common.classpath">
@@ -107,10 +104,7 @@ L-->
       <mapper type="regexp"
         from="^(.*)\-working\@(.*)\.jar$"
         to="\1.jar"/>
-
     </move>
-
-
   </target>
 
 
@@ -148,10 +142,15 @@ L-->
         <exclude name="log*.jar" />
         <!-- avoid org.jboss.tm.TxManager class cast exception -->
         <exclude name="jta*.jar" />
-
         <exclude name="commons-logging*.jar" />
+      	<exclude name="bouncycastle-jdk1.3_1.25.jar"/>
+	    <exclude name="spring-asm*.jar" />
+	    <exclude name="spring-jsm*.jar" />
+	    <exclude name="xml-apis*.jar" />
+      	<exclude name="bcprov-*.jar" />
+            <exclude name="slf4j-log4j12-1.4.3.jar" />
+	    <exclude name="spring-*-3.11.RELEASE.jar" />
       </fileset>
-
     </copy>
     <copy todir="${webapp.dir}/WEB-INF/classes">
       <fileset dir="${resources.dir}">
@@ -173,25 +172,8 @@ L-->
         <exclude name="nbia-dao.jar" />
       </fileset>
     </copy>
-
-<!-- Download Manager no longer uses Remote Search, so remove the copying 
-       of its jar files into the download-mgr-dependencies directory -->
-<!--
-    <copy todir="${webapp.dir}/download-mgr-dependencies">
-      <fileset dir="${download.mgr.target.dir}/../nbia-remote-search">
-        <include name="*.jar"/>
-        <exclude name="nbia-dao.jar" />
-      </fileset>
-    </copy>
-    <copy todir="${webapp.dir}/download-mgr-dependencies">
-      <fileset dir="${remote.search.lib.dir}/runtime">
-        <include name="*.jar"/>
-        <exclude name="jce*"/>
-        <exclude name="nbia-dao.jar" />
-      </fileset>
-    </copy>
--->
   </target>
+
   <target name="compile" depends="ivy-compile">
     <javac srcdir="${src.java.dir}" destdir="${web.classes.dir}" debug="true">
       <classpath refid="project.compile.classpath" />
@@ -213,9 +195,11 @@ L-->
                    flags="g" />
     <!-- end: Insert release/build info into footer and to quick links-->
   	 <!-- start: Insert wiki link into login Failure -->
+  	 
+  	<echo>*************** Insert wiki link into login Failure: ${gov.nih.nci.ncia.wiki.context.sensitive.help.url} </echo>
   	<replaceregexp file="${webapp.dir}/HTML/LoginFailure.html"
   	                   match="\{NBIA_WIKI_CSH_URL}"
-  	                   replace="${nbia.wiki.context.sensitive.help.url}" flags="g" />
+  	                   replace="${gov.nih.nci.ncia.wiki.context.sensitive.help.url}" flags="g" />
   	                   
   	<replaceregexp file="${webapp.dir}/WEB-INF/facelets/layout/quickLinks.xhtml"
   	                   match="\{NBIA_WIKI_UG_URL}"
@@ -223,8 +207,12 @@ L-->
   	 
   	<replaceregexp file="${webapp.dir}/WEB-INF/facelets/layout/mainMenu.xhtml"
 	   	           match="\{NBIA_WIKI_UG_URL}"
-  	                   replace="${nbia.wiki.user.guide.url}" flags="g" />     
-  	 
+  	                   replace="${nbia.wiki.user.guide.url}" flags="g" />    
+  	                   
+  	<replaceregexp file="${webapp.dir}/WEB-INF/facelets/layout/siteMap.xhtml"
+	  		   	           match="\{NBIA_WIKI_UG_URL}"
+  	  	                   replace="${nbia.wiki.user.guide.url}" flags="g" /> 
+  	  	                   
   	<!-- end: Insert wiki link into login Failure and to quick links-->
   </target>
 
@@ -258,15 +246,19 @@ L-->
   </target>
 
   <target name="ear" depends="war">
-    <ear compress="false" destfile="${target.dir}/${ear.name}" appxml="${web.j2ee.resources.dir}/application.xml">
+     <ear compress="false" destfile="${target.dir}/${ear.name}" appxml="${web.j2ee.resources.dir}/application.xml">
       <zipfileset dir="${ear.lib}" prefix="lib" excludes="xalan-2.6.0.jar,xercesImpl-2.6.2.jar"/> 
       <fileset dir="${target.dir}" includes="${war.name}" />
       <fileset dir="${commons.target.dir}" includes="imageZippingMDB.jar" />
       <fileset dir="${commons.target.dir}" includes="imageDeletionMDB.jar" />
       <fileset dir="${download.webapp.target.dir}" includes="*.war" />
+      <!--fileset dir="${oviyam.dir}" includes="*.war" /-->
     </ear>
-    <ivy:report todir="${reports.dir}/ivy/" graph="false"/>
+    <ivy:report todir="${reports.dir}/ivy/" graph="false"/>  
     <!--antcall target="jboss-config.files"/-->
+    	
+    <copy file="${oviyam.dir}/oviyam2.war" tofile="${target.dir}/oviyam2.war">
+    </copy>
   </target>
 
  <target name="jboss-config.files">

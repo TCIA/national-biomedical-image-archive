@@ -27,8 +27,6 @@ import gov.nih.nci.nbia.customserieslist.FileGenerator;
 import gov.nih.nci.nbia.datamodel.IcefacesRowColumnDataModel;
 import gov.nih.nci.nbia.datamodel.IcefacesRowColumnDataModelInterface;
 import gov.nih.nci.nbia.jms.ImageZippingMessage;
-import gov.nih.nci.nbia.jms.JMSClient;
-import gov.nih.nci.nbia.remotesearch.RemoteNode;
 import gov.nih.nci.nbia.search.DrillDown;
 import gov.nih.nci.nbia.search.DrillDownFactory;
 import gov.nih.nci.nbia.search.LocalDrillDown;
@@ -61,11 +59,20 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.servlet.http.HttpServletRequest;
 
+import javax.annotation.Resource;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.ObjectMessage;
+
 import org.apache.log4j.Logger;
 
 import com.icesoft.faces.async.render.SessionRenderer;
 import com.icesoft.faces.context.ByteArrayResource;
-import com.icesoft.faces.context.Resource;
 
 
 /**
@@ -79,7 +86,11 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
     public static final String HIGHLIGHTED = "highlightedData";
     public static final String NOT_HIGHLIGHTED = "";
 
+	@Resource(mappedName = "java:/ConnectionFactory")
+	private ConnectionFactory connectionFactory;
 
+	@Resource(mappedName = "java:/queue/imageQueue")
+    private Queue queue;
 
     /**
      *
@@ -117,15 +128,16 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
 
     public List<BasketSeriesItemBean> getSortedSeriesItems() {
     	List<BasketSeriesItemBean> toSort = basket.getSeriesItems();
-    	if (!oldSort.equals(sortColumnName) ||
-             oldAscending != ascending) {
+    	System.out.println("sortColumnName is - "+sortColumnName);
+    	// if (!oldSort.equals(sortColumnName) ||
+        //     oldAscending != ascending) {
     		 sort(toSort);
-             oldSort = sortColumnName;
-             oldAscending = ascending;
-        } 
+        //     oldSort = sortColumnName;
+        //     oldAscending = ascending;
+        //}
     	return toSort;
     }
-    
+
 	/**
 	 * For a given series ID, tell whether that patient has been added to the basket.
 	 * This is a bit awkward but necessary for execution through EL which doesnt allow
@@ -154,7 +166,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
     	Map<String, Boolean> inBasketMap = new HashMap<String, Boolean>();
     	Map<String, BasketSeriesItemBean> seriesItemMap = basket.getSeriesItemMap();
     	for(BasketSeriesItemBean seriesItem : seriesItemMap.values()) {
-    		inBasketMap.put(seriesItem.getPatientId()+"||"+seriesItem.getGridLocation(), Boolean.TRUE);
+    		inBasketMap.put(seriesItem.getPatientpk()+"||"+seriesItem.getGridLocation(), Boolean.TRUE);
     	}
     	return inBasketMap;
     }
@@ -176,7 +188,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
     public String getToDelete() {
 		return toDelete;
 	}
-    
+
     public void removeAllSeries() {
     	basket.removeAllSeries();
     }
@@ -265,10 +277,10 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
                 BasketSeriesItemBean bsib = seriesItemMap.get(key);
                 SeriesSearchResult seriesDTO = bsib.getSeriesSearchResult();
                 NBIANode node = seriesDTO.associatedLocation();
-                if (node instanceof RemoteNode) {
-                    RemoteNode location = RemoteNode.constructPartialRemoteNode(node.getDisplayName(),node.getURL());
-                    seriesDTO.associateLocation(location);
-                }
+                //if (node instanceof RemoteNode) {
+                //    RemoteNode location = RemoteNode.constructPartialRemoteNode(node.getDisplayName(),node.getURL());
+                //    seriesDTO.associateLocation(location);
+                //}
                 localSeriesDTOs.put(seriesDTO.getId().toString(),seriesDTO);
             }
             izm.setItems(localSeriesDTOs);
@@ -285,11 +297,33 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
 
             izm.setZipFilename(path + File.separator + sb.getUsername() + File.separator + fileName);
 
+			Connection connection = null;
+			try {
+				Destination destination = queue;
 
-            JMSClient rs = new JMSClient("queue/imageQueue",
-            		                     izm,
-            		                     mqURL);
-            rs.run();
+				logger.debug("Sending messages to " + destination );
+				connection = connectionFactory.createConnection();
+				Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+				MessageProducer messageProducer = session.createProducer(destination);
+				connection.start();
+				ObjectMessage message = session.createObjectMessage(izm);
+				messageProducer.send(message);
+				logger.debug("message sent out");
+
+			} catch (JMSException e) {
+				e.printStackTrace();
+				logger.debug("A problem occurred during the delivery of online deletion message");
+				logger.debug("Go your the JBoss Application Server console or Server log to see the error stack trace");
+			} finally {
+				if (connection != null) {
+					try {
+						connection.close();
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+				}
+        }
+
             hasBasketChangedSinceDownload = false;
 
             return BasketBean.FTP_DOWNLOAD;
@@ -365,7 +399,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
      * determine what size increment to represent (GB vs. MB).
      */
     public String getImageSize() {
-    	return BasketUtil.getSizeString(basket.calculateImageSizeInBytes());
+    	return BasketUtil.getExecSizeString(basket.calculateImageSizeInBytes());
     }
 
 
@@ -375,7 +409,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
      * determine what size increment to represent (GB vs. MB).
      */
     public String getAnnotationSize() {
-    	return BasketUtil.getSizeString(basket.calculateAnnotationSizeInBytes());
+    	return BasketUtil.getExecSizeString(basket.calculateAnnotationSizeInBytes());
     }
 
     /**
@@ -482,7 +516,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
         imageList = new ListDataModel(wrappers);
 		icefacesDataModel = new IcefacesRowColumnDataModel(wrappers);
     }
-    
+
     /**
      * Used by the view data basket to view remote and local images.
      * @param theSeries
@@ -582,7 +616,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
     }
 
 
-    public Resource getLaunchDownloadManager() throws Exception{
+    public com.icesoft.faces.context.Resource getLaunchDownloadManager() throws Exception{
         long currentTimeMillis = System.currentTimeMillis();
         jnlpFileName = "dynamic-jnlp-" + currentTimeMillis + ".jnlp";
         if(basket.isEmpty()){
@@ -617,7 +651,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
      *
      * @throws Exception
      */
-    public Resource getExport() throws Exception{
+    public com.icesoft.faces.context.Resource getExport() throws Exception{
         exportFileName = "seriesInstanceUids" + System.currentTimeMillis() + ".csv";
         if(basket.isEmpty()){
             System.out.println("No data in data basket, do not show the export");
@@ -924,7 +958,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
 		}
 	}
 	private String exportIMFileName;
-	
+
 	public String getExportIMFileName(){
 		return exportIMFileName;
 	}
@@ -933,7 +967,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
 	 *
 	 * @throws Exception
 	*/
-	public Resource getExportImageMetadata() throws Exception{
+	public com.icesoft.faces.context.Resource getExportImageMetadata() throws Exception{
 		exportIMFileName = "seriesInstanceUids" + System.currentTimeMillis() + ".csv";
 		if(basket.isEmpty()){
 			System.out.println("No data in data basket, do not show the export");
@@ -954,7 +988,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
     private static final String numberOfImageHeader = "Number of Images";
     private static final String fileSizeHeader = "File Size";
     private static final String annotationFileSizeHeader= "Annotation File Size";
-    
+
 
     private String sortColumnName= "Subject ID";
     private boolean ascending = true;
@@ -1045,8 +1079,8 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
                 	return compareObject(c1.getTotalImagesInSeries().compareTo(c2.getTotalImagesInSeries()),
                 		c2.getTotalImagesInSeries().compareTo(c1.getTotalImagesInSeries()));
                } else if (sortColumnName.equals(fileSizeHeader)) {
-                	return compareObject(c1.getImageSize().compareTo(c2.getImageSize()),
-                		c2.getImageSize().compareTo(c1.getImageSize()));
+                	return compareObject(c1.getImageSizeInMB().compareTo(c2.getImageSizeInMB()),
+                		c2.getImageSizeInMB().compareTo(c1.getImageSizeInMB()));
                }  else if (sortColumnName.equals(annotationFileSizeHeader)) {
                 	return compareObject(c1.getAnnotationsSize().compareTo(c2.getAnnotationsSize()),
                 		c2.getAnnotationsSize().compareTo(c1.getAnnotationsSize()));
@@ -1098,7 +1132,7 @@ public class BasketBean implements Serializable, IcefacesRowColumnDataModelInter
 		return annotationFileSizeHeader;
 	}
 
-	
 
-	
+
+
 }

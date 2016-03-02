@@ -297,12 +297,8 @@ public class SearchWorkflowBean {
     		if(selectItem.getLabel().equalsIgnoreCase("US")){
     			usSearch=true;
     		}
-    	
-    	
-    	selectItem.setValue(true);
-    		
+    		selectItem.setValue(true);
     	}
-    	
     	return null;
     }
 
@@ -598,14 +594,44 @@ public class SearchWorkflowBean {
         this.usSearch = usSearch;
     }
 
+    public boolean isSimpleSearch() {
+		return simpleSearch;
+	}
 
-    /**
+	public void setSimpleSearch(boolean simpleSearch) {
+		this.simpleSearch = simpleSearch;
+	}
+
+
+
+    public boolean isPatientCriteria() {
+		return patientCriteria;
+	}
+
+	public void setPatientCriteria(boolean patientCriteria) {
+		this.patientCriteria = patientCriteria;
+	}
+
+
+
+	public boolean isDateCriteria() {
+		return dateCriteria;
+	}
+
+	public void setDateCriteria(boolean dateCriteria) {
+		this.dateCriteria = dateCriteria;
+	}
+
+	/**
      * This action is performed when the search button is clicked.
      *
      * @throws Exception
      */
     public String submitSearch() throws Exception {
         String result = validateBeforeSearch();
+    	SearchResultBean srb = BeanManager.getSearchResultBean();
+    	logger.debug("***** setting false for simple search *********");
+    	srb.setFirstTime(false);
         if(result!=null) {
             return null;
         }
@@ -614,14 +640,14 @@ public class SearchWorkflowBean {
         if (!buildQuery()) {
             // If there is a validation error, stay on the
             // same page
-        	SearchResultBean srb = BeanManager.getSearchResultBean();
-        	srb.setPatientResults(null);        	
+        	srb = BeanManager.getSearchResultBean();
+        	srb.setPatientResults(null);
             return null;
         }
         try {
             asynchronousQuery(query);
             if (this.resultPerPageOption != null) {
-            	SearchResultBean srb = BeanManager.getSearchResultBean();
+            	srb = BeanManager.getSearchResultBean();
             	srb.setResultsPerPage(new Integer(resultPerPageOption));
             }
         }
@@ -745,7 +771,17 @@ public class SearchWorkflowBean {
         advanced = false;
         usSearch = false;
         freeTextSearch = false;
+        simpleSearch = true;
         return newSearch();
+    }
+
+    public String externalSimpleSearch(String collectionName) {
+    	dynamicSearch = false;
+        advanced = false;
+        usSearch = false;
+        freeTextSearch = false;
+        simpleSearch = true;
+        return externalSearch(collectionName);
     }
 
     public String repopulateSearch() {
@@ -998,6 +1034,7 @@ public class SearchWorkflowBean {
 	public String newDynamicSearch()
 	{
 		dynamicSearch = true;
+		simpleSearch = false;
 		freeTextSearch = false;
 		SearchResultBean srb = BeanManager.getSearchResultBean();
 		srb.setPatientResults(null);
@@ -1005,9 +1042,15 @@ public class SearchWorkflowBean {
 		dySearchBean.resetAction();
 		return DYNAMIC_SEARCH;
 	}
+
+	public boolean isFreeTextSearch() {
+		return freeTextSearch;
+	}
+
 	public String newFreeTextSearch()
 	{
 		freeTextSearch = true;
+		simpleSearch = false;
 		dynamicSearch = false;
 		SearchResultBean srb = BeanManager.getSearchResultBean();
 		srb.setPatientResults(null);
@@ -1073,8 +1116,18 @@ public class SearchWorkflowBean {
     private String numberMonths = "";
     private String seriesDescription = "";
     private String modalityAndedSearch = "any";
+    private boolean toggleQuery = false;
 
-    /**
+
+	public boolean isToggleQuery() {
+		return toggleQuery;
+	}
+
+	public void setToggleQuery(boolean toggleQuery) {
+		this.toggleQuery = toggleQuery;
+	}
+
+	/**
      * The values (v. labels) of contrast agents set by the user (from checkboxes).
      * This array can be empty, or have 1 or 2 elements with the value
      * ContrastAgentCriteria.ENHANCED or ContrastAgentCriteria.UNENHANCED
@@ -1118,8 +1171,12 @@ public class SearchWorkflowBean {
 
     private boolean dynamicSearch = false;
     private boolean freeTextSearch = false;
+    private boolean simpleSearch = false;
 
-    /**
+    private boolean patientCriteria = false;
+    private boolean dateCriteria = false;
+
+	/**
      * Holds the values for manufacturer, model and software version in the tree
      */
     private List<String> selectedManufacturers = new ArrayList<String>();
@@ -1218,6 +1275,8 @@ public class SearchWorkflowBean {
         modalityAndedSearch = "any";
         kvLeftCompare = "";
         patientInput = "";
+        patientCriteria=false;
+        dateCriteria=false;
 
         setDefaultKilovoltValues();
         if(resultPerPageOption == null || StringUtil.isEmpty(resultPerPageOption)){
@@ -1233,6 +1292,8 @@ public class SearchWorkflowBean {
         selectedManufacturers.clear();
         selectedModels.clear();
         selectedSoftwareVersions.clear();
+
+        resetManufacturerTree();
 
         if (query != null) {
             query.setQueryFromUrl(false);
@@ -1266,7 +1327,7 @@ public class SearchWorkflowBean {
 
         this.aimSearchWorkflowBean.setDefaultValues();
         SearchResultBean srb = BeanManager.getSearchResultBean();
-    	srb.setPatientResults(null);   
+    	srb.setPatientResults(null);
     }
 
     private void setDefaultKilovoltValues() {
@@ -1298,6 +1359,42 @@ public class SearchWorkflowBean {
             return "loginFail";
         }
     }
+
+    private String externalSearch(String collectionName) {
+        logger.debug("calling external search action");
+
+        SecurityBean secure = BeanManager.getSecurityBean();
+
+        if (secure.getLoggedIn()) {
+            SearchResultBean resultBean = BeanManager.getSearchResultBean();
+            resultBean.setPatientResults(null);
+            editingSavedQuery = false;
+            setDefaultValues();
+
+        	List<String> collectionNames = lookupMgr.getSearchCollection();
+        	//Collections.sort(collectionNames);
+            collectionItems = JsfUtil.getBooleanSelectItemsFromStrings(collectionNames);
+            SelectItem item = JsfUtil.findSelectItemByLabel(collectionItems, collectionName);
+    		if(item!=null) {
+    			item.setValue(true);
+    		}
+
+    		try {
+    			submitSearch();
+
+    		} catch (Exception e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+            return SEARCH;
+        }
+        else {
+            MessageUtil.addErrorMessage("MAINbody:loginForm:pass", "securitySearch");
+            secure.setLoginFailure(false);
+            return "loginFail";
+        }
+    }
+
 
     private void addSelectedSoftwareVersion(String ver) {
     	if (!StringUtil.isEmpty(ver) && (!this.selectedSoftwareVersions.contains(ver))) {
@@ -1336,6 +1433,7 @@ public class SearchWorkflowBean {
         // and ID of the query.
         if (oldQuery != null) {
             query.setQueryName(oldQuery.getQueryName());
+
             query.setSavedQueryId(oldQuery.getSavedQueryId());
         }
         if(query.getCriteriaList().isEmpty()) {
@@ -1386,6 +1484,44 @@ public class SearchWorkflowBean {
         	}
         }
     }
+
+	private void resetManufacturerTree() {
+        DefaultTreeModel manufacturerTree = lookupBean.getManufacturerTree();
+        Enumeration manufacturers = ((DefaultMutableTreeNode)manufacturerTree.getRoot()).children();
+		EquipmentTreeUserObject parentObj = (EquipmentTreeUserObject)((DefaultMutableTreeNode)manufacturerTree.getRoot()).getUserObject();
+		parentObj.setExpanded(false);
+		parentObj.setSelected(false);
+
+		while (manufacturers.hasMoreElements()) {
+			DefaultMutableTreeNode currMan = (DefaultMutableTreeNode) manufacturers.nextElement();
+			EquipmentTreeUserObject currObj = (EquipmentTreeUserObject)currMan.getUserObject();
+			if (currObj.isSelected())
+				currObj.setSelected(false);
+
+			if (currObj.isExpanded())
+				currObj.setExpanded(false);
+
+			Enumeration currModels = currMan.children();
+			while (currModels.hasMoreElements()) {
+				DefaultMutableTreeNode currModel = (DefaultMutableTreeNode) currModels.nextElement();
+				EquipmentTreeUserObject currModelObj = (EquipmentTreeUserObject)currModel.getUserObject();
+				if (currModelObj.isSelected())
+					currModelObj.setSelected(false);
+
+				if (currModelObj.isExpanded())
+					currModelObj.setExpanded(false);
+
+				Enumeration currentVersions = currModel.children();
+				while (currentVersions.hasMoreElements()) {
+					DefaultMutableTreeNode currVer = (DefaultMutableTreeNode) currentVersions.nextElement();
+					EquipmentTreeUserObject verObj = (EquipmentTreeUserObject)currVer.getUserObject();
+
+					if (verObj.isSelected())
+						verObj.setSelected(false);
+				}
+			}
+		}
+	}
 
     //saved query
     private void updateManufacturerLevelOfTree() {
@@ -1555,6 +1691,13 @@ public class SearchWorkflowBean {
     }
 
     public void modalityChangeListener(ValueChangeEvent event) {
+
+    	if(!editingSavedQuery)
+    	{
+    		setToggleQuery(true);
+    	}
+
+
     	if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
     		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
     		event.queue();
@@ -1576,6 +1719,71 @@ public class SearchWorkflowBean {
 		}
 		try {
 			submitSearch();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+    public void patientSelectChangeListener(ValueChangeEvent event) {
+
+    	if(!editingSavedQuery)
+    	{
+    		setToggleQuery(true);
+    	}
+
+    	if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
+    		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+    		event.queue();
+            return;
+        }
+		try {
+			logger.debug("patientSearch invoked");
+			submitSearch();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    public void baselineSelectChangeListener(ValueChangeEvent event) {
+
+    	if(!editingSavedQuery)
+    	{
+    		setToggleQuery(true);
+    	}
+
+    	if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
+    		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+    		event.queue();
+            return;
+        }
+		try {
+			logger.debug("baselineSearch invoked");
+			submitSearch();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    public void dateSelectChangeListener(ValueChangeEvent event) {
+
+    	if(!editingSavedQuery)
+    	{
+    		setToggleQuery(true);
+    	}
+
+    	if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
+    		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+    		event.queue();
+            return;
+        }
+		try {
+			logger.debug("dateSearch invoked");
+			submitSearch();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1591,13 +1799,13 @@ public class SearchWorkflowBean {
         	modalityDescMap.put(dto.getModalityName(), dto.getDescription());
         }
     }
-    
+
     /*
      * returns whether to show anatomic criteria or not
      */
     public boolean isShowAnatomicCriteria() {
     	String retValue = System.getProperty("show.anatomical.search.criteria");
-    	
+
     	if( retValue.equals("true")) {
     		return true;
     	}
@@ -1605,7 +1813,7 @@ public class SearchWorkflowBean {
     		return false;
     	}
     }
-    
+
    public void resultPerPageOptionChangeListener(ValueChangeEvent event) {
 	   if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
    		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
@@ -1622,6 +1830,21 @@ public class SearchWorkflowBean {
 		}
 
    }
-  
-  
+
+   public void modalityAndAnyOptionChangeListener(ValueChangeEvent event) {
+	   if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
+   		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+   		event.queue();
+           return;
+       }
+	    String modalityAndedSearch = (String)event.getNewValue();
+		System.out.println("modalityAndedSearch new value" + modalityAndedSearch);
+		this.modalityAndedSearch = modalityAndedSearch;
+		try {
+			submitSearch();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+   }
 }

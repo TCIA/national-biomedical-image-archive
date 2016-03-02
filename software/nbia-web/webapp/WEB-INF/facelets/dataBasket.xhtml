@@ -25,16 +25,19 @@ L-->
     <td valign="top">
     <table summary="" cellpadding="0" cellspacing="0" border="0" class="contentPage"  width="100%">
       <tr>
-        <td>
-            <h:commandButton image="images/back_to_search_results.jpg" alt="Back To Search Results"
-                             action="#{searchWorkflowBean.backToSearch}"  
-                             rendered="#{not empty searchResultBean.nodeTablesWrappers}" />                                                                
-        </td>
     	<td width="90%">
-        <h2>
-        <h:outputText value="#{msg.dataBasket_myBasket}" /><ncia:help label="images/help_icon.png" helpId="-managedatabasket" />
-        </h2>
+        <div class="adminToolsContainer">
+        <h:outputText value="#{msg.dataBasket_myBasket}" />
+        <ncia:help label="images/help_icon.png" helpId="-ManagingtheDataBasket" />
+        </div>
         </td>
+        </tr>
+        <tr>
+        	<td>
+	            <h:commandButton image="images/back_to_search_results.jpg" alt="Back To Search Results"
+	                             action="#{searchWorkflowBean.backToSearch}"  
+	                             rendered="#{not empty searchResultBean.nodeTablesWrappers}" />                                                                
+        	</td>
         </tr>
      </table>
       <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -211,14 +214,7 @@ L-->
                                         attachment="true"/>              
                   </ice:panelGroup> 
                 </td>
-                <td style="display:inline;margin-left: s0px;">              
-                  <ice:panelGroup styleClass="iceMnuBarItem" 
-                                  rendered="#{basketBean.ncicb}">               
-                    <ice:commandLink value="Visualize Images"
-                                     id="visualizeImages" rendered="#{not empty basketBean.seriesItems}"
-                                     action="#{cedaraBean.initiateCedaraAgainstSelectedBasketItems}"/>
-                  </ice:panelGroup>  
-                </td>
+
                 <td align="right" width="100%" style="padding-left: 10px">                                                                                     
                   <ice:panelGroup styleClass="iceMnuBarItem" style="float:right" rendered="#{not empty basketBean.seriesItems}">   
                     <ice:commandLink styleClass="iceMnuBarItemLabel" 
@@ -272,7 +268,9 @@ L-->
     			</ice:panelGroup> 
                       </f:facet>
                       <ice:panelGroup style="width:145px">
+                      <div>
                       <h:outputText value="#{item.patientId}" />
+                      </div>
                       </ice:panelGroup>
                     </h:column>
                     <h:column id="studyIdColumn">
@@ -284,8 +282,9 @@ L-->
 			</ice:panelGroup>   
                       </f:facet>
                       <ice:panelGroup style="width:70px" onmouseover="return overlib('#{item.studyId}');" onmouseout="return nd();">
+                      <div>
                       <h:outputText value="...."/><h:outputText value="#{fn:substring(item.studyId,fn:length(item.studyId)-8,fn:length(item.studyId))}" />
-                      
+                      </div>
                       </ice:panelGroup>
                     </h:column>
                     <h:column id="studyDateColumn">
@@ -307,7 +306,9 @@ L-->
 			</ice:panelGroup>
                       </f:facet>
                       <ice:panelGroup style="width:180px">
+                      <div>
                       <h:outputText value="#{item.studyDescription}" />
+                      </div>
                       </ice:panelGroup>
                     </h:column>
                     <h:column id="seriesIdColumn">
@@ -355,7 +356,7 @@ L-->
     			 </ice:panelGroup>
                       </f:facet>
                       <ice:panelGroup style="width:40px">
-                      <h:outputText value="#{item.imageSize}"/>
+                      <h:outputText value="#{item.imageSizeInMB}"/>
                       </ice:panelGroup>
                     </h:column>
                     <h:column id="annotationsSizeColumn" style="white-space: normal;">
@@ -367,7 +368,7 @@ L-->
     			 </ice:panelGroup>
                       </f:facet>
                       <ice:panelGroup style="width:65px">
-                      <h:outputText value="#{item.annotationSize3Digits}" escape="false"/>
+                      <h:outputText value="#{item.annotationSize3DigitsInMB}" escape="false"/>
                       </ice:panelGroup>
                     </h:column>  
                     <!-- h:column id="dataBasketDeleteColumn">

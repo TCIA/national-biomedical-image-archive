@@ -25,23 +25,22 @@ L-->
 	      <td>
 	        <h:panelGroup>
 	          <h:commandButton image="images/search_grey.gif" alt="Search" title="Search"
-	                     action="#{searchWorkflowBean.backToSearch}" 
-	                     disabled="#{ispyBean.isQueryFromUrl}"/>
+	                     action="#{searchWorkflowBean.backToSearch}" />
 	          <h:graphicImage url="images/breadcrumb_arrows.gif" alt="breadcrumb arrow"/>
 	          <h:commandButton image="images/study_red.gif" action="displayStudy" alt="Study" title="Study"/>
 	        </h:panelGroup>
 	      </td>
 	      <td width="70%">
-	       <h2>
+	       <div class="searchFormHeader">
 	              <h:outputText value="#{msg.search_subjectResults} #{searchResultBean.patient.subjectId}) " />
-	              <ncia:help label="images/help_icon.png" helpId="-searchresultsstudiesforsubject" />
-	        </h2>
+	              <ncia:help label="images/help_icon.png" helpId="-SearchResultsStudiesforSubject" />
+	        </div>
 	      </td>
   	</tr>
            <tr>
-	                    <td width="30%">
-	  		     <div>
-	  		     	     <ice:commandLink id="addSeriesToBasketButton"  style="float:left;border: solid 1px #2A4E77;" styleClass="button" action="#{studiesSearchResultBean.addAllSeriesToBasket}">                                          
+	                    <td colspan="2">
+	  		     <div style="float:right; margin-right: 18px">
+	  		     	     <ice:commandLink id="addSeriesToBasketButton"  style="float:right; border: solid 1px #2A4E77;" styleClass="button" action="#{studiesSearchResultBean.addAllSeriesToBasket}">                                          
 	  		     	         <ice:outputText value="Add all found to  " style="display:inline"/>
 	  		     	  	 <ice:graphicImage value="images/cart-empty.png" style="border:none;display:inline;" alt="Add All To Basket"/>                                                                               
 	  		     	     </ice:commandLink>
@@ -49,25 +48,7 @@ L-->
 	  	                <h:message for="addSeriesToBasketButton" errorClass="errorLabel" infoClass="infoLabel" />         
 	  	              </div>                  
 	                    </td>
-	  	          <f:subview id="cedaraView" rendered="#{searchResultBean.local}">
-		  	  <td class="formMessage" align="right">
-		  	    <font color="#000000">
-			  	<b>To VISUALIZE IMAGES, a 3rd party software is required.<br/>
-			  	Click<f:verbatim>&amp;nbsp;</f:verbatim><a href="http://ncicb.nci.nih.gov/download/#NTools" target="blank" >
-			  	<font color="#0033CC">here</font></a> to download Cedara I-Response software.</b>
-			     </font>
-			     <br/>
-			     (Note that Cedara I-Response only operates on Windows XP)
-		  	</td>
-		  	<td>
-		  	<h:message for="visualizeImages" errorClass="errorLabel" infoClass="infoLabel" />
-		  	<h:commandButton id="visualizeImages" alt="visualize Images" title="visualize Images"
-						  			image="images/visualizeImages.gif"  
-						  			onclick="if(!countUserSelection(this.form)){return false};"
-						  			rendered="#{searchResultBean.local}" 
-			  			action="#{cedaraBean.visualizeSelectedSeries}"/>  
-		  	</td>
-		  	 </f:subview>  
+	           
 		  </tr>
           <tr>
             <td colspan="3">
@@ -97,6 +78,11 @@ L-->
 	                                <h:outputText value="#{msg.search_date}" />
 	                              </div>
 	                            </td>
+	                            <td class="formTitleII" scope="col">
+	                              <div align="left">
+	                                <h:outputText value="Study Images" />
+	                              </div>
+	                            </td>
 	                          </tr>
 	                          <tr>
 	                            <td class="formLabel" width="30%">
@@ -112,10 +98,15 @@ L-->
 	                                            rendered="#{(study.study.offSetDesc) != null}" 
 	                                            title="#{study.dateString}" />
 	                            </td>
-	                            
+	                            <td  class="formLabel">
+                                   <h:commandLink target="newWin"
+                                                    onclick="window.open('#{study.study.link}');return false;">
+                                                     <h:outputText value="DICOM Web Viewer"/>
+                                    </h:commandLink> 
+	                            </td>	                            
 	                          </tr>
 	                          <tr>
-				    <td colspan="3" >
+				    <td colspan="4" >
 				         <h:dataTable id="seriesTable" 
 				                                         value="#{study.seriesResults}" 
 				                                         var="series" 

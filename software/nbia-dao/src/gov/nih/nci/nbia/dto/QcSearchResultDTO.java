@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import gov.nih.nci.nbia.qctool.VisibilityStatus;
+import gov.nih.nci.ncia.search.APIURLHolder;
 
 public class QcSearchResultDTO {
 	private String collection;
@@ -25,8 +26,8 @@ public class QcSearchResultDTO {
 	private boolean selected;
 	private String modality;
 	private String seriesDescription;
-	
-	
+	private String link;
+	private String user;
 	public QcSearchResultDTO(String collection, 
 							 String site,
 							 String patientId,
@@ -158,6 +159,24 @@ public class QcSearchResultDTO {
 
 	public void setSeriesDescription(String seriesDescription) {
 		this.seriesDescription = seriesDescription;
+	}
+
+	public String getLink() {
+		return APIURLHolder.getUrl()+"/oviyam2/oviyam?serverName="+APIURLHolder.getUrl()+
+		"/nbia-api/services/o&studyUID="+study+"&seriesUid="+series+"&oviyamId="+APIURLHolder.addUser(user)+
+		"&wadoUrl="+APIURLHolder.getWadoUrl();
+	}
+
+	public void setLink(String link) {
+		//this.link = link;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
 	}
 
 	

@@ -310,7 +310,7 @@ function countDataBasketSelection(form)
 function selectAllInContainingTable(containerTableName) {
     var containerTable = document.getElementById(containerTableName);
     if(containerTable==null) {
-        return;
+    	this.disabled="disabled"
     }
     var inputElements = containerTable.getElementsByTagName('input');
     for(var z = 0; z<inputElements.length; z++) {
@@ -320,4 +320,35 @@ function selectAllInContainingTable(containerTableName) {
     }
 
 
+}
+
+/**************************Editing Workflow Item ***************************************/
+function editWorkflow(val){
+	
+	var val;
+	
+	document.getElementById("hiddenName").value=val;
+
+}
+
+/**************************Deleting Workflow Item ***************************************/
+function delWorkflow(delVal, delName, event){
+	var delVal;
+	var delName;
+	
+    if (confirm("Are you sure you want to delete workflow '"+ delName +"' ?")) {
+    	document.getElementById("hiddenDel").value=delVal;
+        return true;
+    } else {
+        return event.preventDefault();
+    }
+	
+
+}
+
+/***************************WORKFLOW RELATED JAVASCRIPT*****************************/
+function cancelValidation()
+{
+	document.getElementById("MAINbody:createWorkFlowForm:name").value=" ";
+	document.getElementById("MAINbody:createWorkFlowForm:hyperlinkWorkFlow").value=" ";
 }

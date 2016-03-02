@@ -30,10 +30,7 @@ L-->
     for the required JAR files. Alternatively you can use another connection pool
     such as C3P0, similarly configured using Spring.
   -->
-  <!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
-      p:driverClassName="${jdbc.driverClassName}" p:url="${jdbc.url}" p:username="${jdbc.username}"
-      p:password="${jdbc.password}"/>
-  -->
+
   <!-- JNDI DataSource for JEE environments -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location" value="classpath:hibernate.properties"/>
@@ -84,7 +81,7 @@ L-->
         <value>gov/nih/nci/nbia/internaldomain/SavedQueryAttribute.hbm.xml</value>
         <value>gov/nih/nci/nbia/internaldomain/SavedQueryLastExec.hbm.xml</value>
         <value>gov/nih/nci/nbia/internaldomain/SubmissionHistory.hbm.xml</value>
-
+        <value>gov/nih/nci/nbia/internaldomain/Workflow.hbm.xml</value>
         <value>gov/nih/nci/nbia/internaldomain/AimImagingObservationCharacteristic.hbm.xml</value>
         <value>gov/nih/nci/nbia/internaldomain/AimQuantification.hbm.xml</value>
       </list>
@@ -259,7 +256,21 @@ class="org.springframework.orm.hibernate3.HibernateTransactionManager">
       <ref bean="sessionFactory"/>
     </property>
   </bean>
-
+  <bean id="workflowDAO" class="gov.nih.nci.nbia.dao.WorkflowDAOImpl">
+    <property name="sessionFactory">
+      <ref bean="sessionFactory"/>
+    </property>
+  </bean>
+  <bean id="workflowSupportDAO" class="gov.nih.nci.nbia.workflowsupport.WorkflowSupportDAOImpl">
+    <property name="sessionFactory">
+      <ref bean="sessionFactory"/>
+    </property>
+  </bean>
+    <bean id="WADOSupportDAO" class="gov.nih.nci.nbia.wadosupport.WADOSupportDAOImpl">
+    <property name="sessionFactory">
+      <ref bean="sessionFactory"/>
+    </property>
+  </bean>
  	<bean id="imageDeletionService" class="gov.nih.nci.nbia.deletion.ImageDeletionServiceImpl">
      </bean>
      <bean id="imageFileDeletionService" class="gov.nih.nci.nbia.deletion.ImageFileDeletionServiceImpl">

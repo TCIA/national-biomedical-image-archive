@@ -409,7 +409,7 @@ a.footerMenuLink:hover {
 /* ********************************* END MAIN LAYOUT RULES ***************************************/
 
 .errorLabel {
-  color: red; 
+  color:#FF0000;
   font-family: arial,helvetica,verdana,sans-serif; 
   text-align: left
 }
@@ -678,6 +678,14 @@ table.contentPageII {
   background-color: #cccccc
 }
 
+.welcomeTitleMain {
+  border-top: #cccccc 1px solid;
+  font-weight: bold; 
+  font-size: 0.7em; 
+  font-family: verdana, arial, helvetica, sans-serif; 
+  background-color: #cccccc
+}
+
 .welcomeContent {
   padding-right: 1em; 
   padding-left: 1em; 
@@ -805,6 +813,11 @@ table.contentPageII {
   font-weight: bold
 }
 
+.panelGroupHeader{
+  background-color:#6E81A6; 
+  color:#FFFFFF;
+}
+
 #notification {
   bottom: 0;
   padding: 0;
@@ -865,16 +878,12 @@ table.contentPageII {
    border: 0px;
  }
  
-.submissionReportTitleContainer {
-  width: 800px;
+.adminToolsContainer {
   text-align: center;
-}
-
-.submissionReportTitle {
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 15px;
+  margin-bottom: 15px;
   color:#5C5C5C;
-  font-size:1.6em;
+  font-size:24px;
   font-weight:bold;
 }
  
@@ -931,6 +940,11 @@ table.promptbox {
   padding-right:2px;
 }
 /* end - stolen from caNanoLab */
+
+.searchFormHeader{
+	font-weight:bold; 
+	font-size: 25px;
+}
 
 .searchFormSelector {
     overflow: auto;

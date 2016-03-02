@@ -25,13 +25,13 @@ L-->
     <td class="bannerHome">
       <div align="center" style="background-color:#000000">
  	
-        <img src="images/nci-vol-1754-72.jpg" width="17.5%" height="20%"
+        <img src="images/nci-vol-1754-72.jpg" width="17.5%" height="125px"
              alt="banner"/>
-        <img src="images/nci-vol-1753-72.jpg" width="17.5%" height="20%"
+        <img src="images/nci-vol-1753-72.jpg" width="17.5%" height="125px"
 	             alt="image"/>
-	         <img src="images/nci-vol-1755-72.jpg" width="17.5%" height="20%"
+	         <img src="images/nci-vol-1755-72.jpg" width="17.5%" height="125px"
              alt="banner"/>    
-        <img src="images/bannerHome.gif" width="47.5%" height="20%"
+        <img src="images/bannerHome.gif" width="47.5%" height="125px"
              alt="banner"/>
         
    	
@@ -71,7 +71,7 @@ L-->
 	      	            	<h:outputText value="#{msg.home_search_guest_user}"/>
 	      	              </td>
 	      	              <td valign="middle" class="none"  align="center" width="11%">
-			    	<ncia:help label="images/help_icon.png" helpId="-logintonbia" />
+			    	<ncia:help label="images/help_icon.png" helpId="-LoggingintoNBIA" />
 			      </td>
 	      	          </tr>
 	      	       </table>
@@ -87,7 +87,7 @@ L-->
             </table>
             <!-- welcome ends -->
           </td>
-   	  <td valign="top" align="left" class="welcomeTitle" >
+   	  <td valign="top" align="left" class="welcomeTitleMain" >
 	  <table summary="" cellpadding="0" cellspacing="0" border="0" width="100%"  >
 	    <tr>
 	  	<td valign="top" ><!-- sidebar begins -->
@@ -120,26 +120,30 @@ L-->
 	  			<ice:outputLabel for="pass2" value="#{msg.home_password}" />
 	  			</td>
 	  			<td class="formFieldLogin">
-	  			<h:inputSecret id="pass2" value="#{securityBean.password}" size="14" maxlength="100"/> 
+	  			<h:inputSecret id="pass2" value="#{securityBean.password}" autocomplete="off" size="14" maxlength="100"/>
 	  			</td>
 	  			</tr>
 	  			<tr>
 	  			<td>
 	  			<f:verbatim>&amp;nbsp;</f:verbatim>
-	  			</td>
-	  			<td>
-	  			<h:messages layout="table"
-	  			styleClass="errorLabel" />
-	  			</td>
+	  			</td>	  			
 	  			</tr>
 	  			<tr>
-	  			<td>
-	  			<f:verbatim>&amp;nbsp;</f:verbatim>
+					<td>
+					<f:verbatim>&amp;nbsp;</f:verbatim>
+					</td>
+					<td>
+					<h:commandButton id="loginButton2" styleClass="actionButton" value="#{msg.home_login}" action="#{securityBean.login}" /> 
+					</td>
+				</tr> 
+				<tr>
+				<td colspan="2">
+					<h:messages layout="table"
+					styleClass="errorLabel" />
 	  			</td>
-	  			<td>
-	  			<h:commandButton id="loginButton2" styleClass="actionButton" value="#{msg.home_login}" action="#{securityBean.login}" /> 
-	  			</td>
-	  			</tr>   
+				</tr>
+
+	  			<f:subview id="passwordChangeView" rendered="#{securityBean.firstTimeLogin}">
 	  			<tr>
 	  			<td align="center" colspan="2">
 	  			<a href="#"

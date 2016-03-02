@@ -44,6 +44,7 @@ public class SearchResultBean {
 
 
 	public SearchResultBean() {
+		
 	}
 
     /**
@@ -149,18 +150,8 @@ public class SearchResultBean {
 	 * on the local box.  Don't invoke this before viewPatient(xxx).
 	 */
 	public boolean isLocal() {
-		boolean showCedara = patient.associatedLocation().isLocal();
-		String installationSite = NCIAConfig.getInstallationSite();
-		if (installationSite.equalsIgnoreCase(NCIAConstants.INSTALLATION_SITE) &&
-				showCedara == true)
-		{
-			showCedara = true;
-		}
-		else
-		{
-			showCedara = false;
-		}
-	
+		//Cedara is not supported since 6.0.  So it is always false.
+		boolean showCedara = false;
 		return showCedara;
 	}
 
@@ -188,7 +179,6 @@ public class SearchResultBean {
 	 */
 	public String saveQuery() {
 		logger.debug("query name is: " + queryName);
-
 		SearchWorkflowBean swb = BeanManager.getSearchWorkflowBean();
 		String queryNameText = "MAINbody:searchMenuForm:saveQueryView:queryName";
 
@@ -197,7 +187,7 @@ public class SearchResultBean {
 		// when the user wants to update the query
 		if (swb.isEditingSavedQuery()) {
 			queryNameText = "MAINbody:searchMenuForm:saveQueryView:newDataQuery";
-
+			swb.setToggleQuery(false);
 			if (updateQuery) {
 				QueryStorageManager qManager = (QueryStorageManager)SpringApplicationContext.getBean("queryStorageManager");
 				long newQueryId;
@@ -208,6 +198,7 @@ public class SearchResultBean {
 					MessageUtil.addInfoMessage(queryNameText,
 							                   "queryUpdated",
 							                   new Object[] { query.getQueryName() });
+					
 					swb.setEditingSavedQuery(false);
 					queryName = "";
 				} catch (Exception e) {
@@ -233,14 +224,13 @@ public class SearchResultBean {
 				String oldQueryName = query.getQueryName();
 				query.setQueryName(queryName);
 				query.setUserID(uName);
-
+				swb.setToggleQuery(false);
 				QueryStorageManager qManager = (QueryStorageManager)SpringApplicationContext.getBean("queryStorageManager");
 				long newQueryId;
 
 				try {
 					newQueryId = qManager.saveQuery(query);
 					query.setSavedQueryId(newQueryId);
-
 					queryBean.updateSavedQueryCount();
 					MessageUtil.addInfoMessage(queryNameText, 
 							                   "querySaved",
@@ -342,7 +332,11 @@ public class SearchResultBean {
 	
 	
 	private boolean isTextResult=false;
-
+	
+    boolean isFirstTime = true;
+    boolean isFirstTimeAdvanced = true;
+    boolean isFirstTimeText = true;
+    
 	/**
      * Each object in this collection represents the gui state for the search
      * results from a given node.  so two nodes search means two elements in this colleciton.
@@ -560,7 +554,32 @@ public class SearchResultBean {
 	}
 
 
+	public boolean isFirstTime() {
+		return isFirstTime;
+	}
+
+	public void setFirstTime(boolean isFirstTime) {
+		this.isFirstTime = isFirstTime;
+	}
+
+	public boolean isFirstTimeAdvanced() {
+		return isFirstTimeAdvanced;
+	}
+
+	public void setFirstTimeAdvanced(boolean isFirstTimeAdvanced) {
+		this.isFirstTimeAdvanced = isFirstTimeAdvanced;
+	}
+
+	public boolean isFirstTimeText() {
+		return isFirstTimeText;
+	}
+
+	public void setFirstTimeText(boolean isFirstTimeText) {
+		this.isFirstTimeText = isFirstTimeText;
+	}
+
 	public String getHitHeader() {
 		return hitHeader;
 	}
+	
 }

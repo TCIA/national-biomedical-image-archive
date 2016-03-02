@@ -10,7 +10,6 @@ package gov.nih.nci.nbia.beans;
 
 import gov.nih.nci.nbia.beans.searchresults.SearchResultBean;
 import gov.nih.nci.nbia.beans.security.SecurityBean;
-import gov.nih.nci.nbia.dto.CollectionDescDTO;
 import gov.nih.nci.nbia.dynamicsearch.DataFieldParser;
 import gov.nih.nci.nbia.dynamicsearch.DataFieldTypeMap;
 import gov.nih.nci.nbia.dynamicsearch.DynamicSearchCriteria;
@@ -50,8 +49,6 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
-import org.apache.tools.ant.taskdefs.Sleep;
-
 public class DynamicSearchBean {
 
 	//private static Logger logger = Logger.getLogger(DynamicSearchBean.class);
@@ -81,7 +78,7 @@ public class DynamicSearchBean {
 	protected String textValue;
 	protected List<DynamicSearchCriteria> criteria = new ArrayList<DynamicSearchCriteria>();
 	protected List<DynamicSearchCriteriaBean> criteriaBean = new ArrayList<DynamicSearchCriteriaBean>();
-	
+
 	protected boolean showCriteria = false;
 	protected boolean hasDuplicate = false;
 	protected UIData table;
@@ -166,7 +163,7 @@ public class DynamicSearchBean {
 					dataGroupItems.add(new SelectItem(ds.getSourceName(), ds.getSourceLabel()));
 				}
 			}
-		}	
+		}
 		return dataGroupItems;
 	}
 
@@ -382,6 +379,9 @@ public class DynamicSearchBean {
 
 	public void addCriteria() throws Exception
 	{
+		SearchResultBean srb = BeanManager.getSearchResultBean();
+        srb.setFirstTimeAdvanced(false);
+        System.out.println("********FirstTimeAdvanced set false**********");
 		if( selectValidate()){
 			return;
 		}
@@ -420,7 +420,7 @@ public class DynamicSearchBean {
 					break;
 				}
 			}
-			
+
 		}
 		if (newValue != null)
 		{
@@ -430,8 +430,8 @@ public class DynamicSearchBean {
 		{
 			dsc.setDataGroup(initialDataGroup.trim());
 		}
-		System.out.println("get selected field="+ selectedField.trim());		
-				
+		System.out.println("get selected field="+ selectedField.trim());
+
 		dsc.setLabel(itemLabelTable.get(selectedField.trim()));
 
 		if (!isDuplicate(dsc)) {
@@ -529,7 +529,7 @@ public class DynamicSearchBean {
 	        	isCT = false;
 	        }
 	        criteria.remove(tmpBean);
-	        
+
 	      }
 	    }
 	    if (criteria.size() == 0)
@@ -538,9 +538,9 @@ public class DynamicSearchBean {
 	    }
 	    hasDuplicate = false;
 	    defaultView();
-	    
+
 	}
-	
+
 
 	public String getRelation() {
 		return relation;
@@ -580,7 +580,7 @@ public class DynamicSearchBean {
 
 	public String submitSearch() throws Exception
 	{
-		String returnValue = "submitSearch";
+		String returnValue = "dynamicSearch";
 		if(criteria !=null && !criteria.isEmpty()) {
 			QueryHandler qh = (QueryHandler)SpringApplicationContext.getBean("queryHandler");
 			qh.setStudyNumberMap(ApplicationFactory.getInstance().getStudyNumberMap());
@@ -597,7 +597,10 @@ public class DynamicSearchBean {
 	}
 	public String submitTextSearch() throws Exception
 	{
-		String returnValue = "submitTextSearch";
+		SearchResultBean srb = BeanManager.getSearchResultBean();
+        srb.setFirstTimeText(false);
+        System.out.println("********firstTime set false text search**********");
+		String returnValue = "freeTextSearch";
 		QueryHandler qh = (QueryHandler)SpringApplicationContext.getBean("queryHandler");
 		System.out.println("Searching Solr for"+textValue);
 		List<SolrAllDocumentMetaData> results = qh.searchSolr(textValue);
@@ -610,17 +613,16 @@ public class DynamicSearchBean {
 		}
 		if (patientIDs.toString().length()<2) patientIDs.append("zzz33333###"); // no patients found
 		DynamicSearchCriteria dsc = new DynamicSearchCriteria();
-		String selectFieldType = "java.lang.String";
 		dsc.setField("patientId");
 		dsc.setDataGroup("Patient");
 		Operator op = new Operator();
 		op.setValue("contains");
 		dsc.setOperator(op);
 		dsc.setValue(patientIDs.toString());
-        
+
 		criteria.clear();
 		criteria.add(dsc);
-		
+
 
 		if(criteria !=null && !criteria.isEmpty()) {
 
@@ -642,7 +644,7 @@ public class DynamicSearchBean {
 				    textPatients.add(textResult);
 				}
 			}
-			
+
 			populateSearchResults(textPatients);
 		} else {
 			populateSearchResults(null);
@@ -902,7 +904,7 @@ public class DynamicSearchBean {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}		
+		}
 	}
 	private void editCriteria(ValueChangeEvent event) {
 		UIComponent tmpComponent = event.getComponent();
@@ -930,7 +932,7 @@ public class DynamicSearchBean {
 	        	}
 	        }
 	      }
-		
+
 	}
 
 	public void relationChangeListener(ValueChangeEvent event) {
@@ -942,9 +944,9 @@ public class DynamicSearchBean {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void resultPerPageOptionChangeListener(ValueChangeEvent event) {
 		if (!event.getPhaseId().equals(PhaseId.INVOKE_APPLICATION)) {
 	   		event.setPhaseId(PhaseId.INVOKE_APPLICATION);
@@ -976,7 +978,7 @@ public class DynamicSearchBean {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public List<DynamicSearchCriteriaBean> getCriteriaBean() {
 		return criteriaBean;
 	}
@@ -984,7 +986,7 @@ public class DynamicSearchBean {
 	public void setCriteriaBean(List<DynamicSearchCriteriaBean> criteriaBean) {
 		this.criteriaBean = criteriaBean;
 	}
-	
+
 	public void removeCriteriaItem (ActionEvent event)	{
 	    UIComponent tmpComponent = event.getComponent();
 
@@ -1004,7 +1006,7 @@ public class DynamicSearchBean {
 	 	        	isCT = false;
 	 	        }
 		        criteriaBean.remove(tmpCBean);
-		     
+
 	      }
 	    }
 	    if (criteriaBean.size() == 0) {
@@ -1015,7 +1017,7 @@ public class DynamicSearchBean {
 	    	criteria.clear();
 			for (DynamicSearchCriteriaBean tmp:criteriaBean) {
 				criteria.add(tmp.getCriteria());
-			}	
+			}
 			submitSearch();
 			defaultView();
 	    }catch (Exception e) {
@@ -1025,17 +1027,17 @@ public class DynamicSearchBean {
 	public void addTextCriteria() {
 		try {
 		addCriteria();
-		if(!errorMessage) {
+		if(!errorMessage && !invalidDate && !invalidDouble && !invalidInteger) {
 			submitSearch();
 			defaultView();
 		}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 	private boolean editTextPopupRendered = false;
-	
+
 	public void editTextCriteria(ActionEvent event){
 		DynamicSearchCriteriaBean selectItem = (DynamicSearchCriteriaBean) event.getComponent().getAttributes().get("textCiteria");
     	System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+ selectItem.getCriteria().getValue());
@@ -1046,9 +1048,9 @@ public class DynamicSearchBean {
     	selectedOperand = selectItem.getCriteria().getOperator().getValue();
     	criteriaBean.remove(selectItem);
 		editTextPopupRendered= true;
-		
+
     }
-	
+
 	public void submitEditCriteria(ActionEvent event){
 		for(int i=0; i< stringOperands.length; i++){
     		if(selectedOperand.equalsIgnoreCase(stringOperands[i])) {
@@ -1063,11 +1065,11 @@ public class DynamicSearchBean {
 		try {
 			newValue= selectedDataGroup;
 			addCriteria();
-			if(!errorMessage) {
+			if(!errorMessage && !invalidDate && !invalidDouble && !invalidInteger) {
 				criteria.clear();
 				for (DynamicSearchCriteriaBean tmp:criteriaBean) {
 					criteria.add(tmp.getCriteria());
-				}	
+				}
 				hasDuplicate = false;
 				submitSearch();
 			}
@@ -1088,12 +1090,12 @@ public class DynamicSearchBean {
 	}
 	public String cancelEditPopup() {
 		for (DynamicSearchCriteria tmp:criteria) {
-			if(!containsCriteria(tmp)) {	
+			if(!containsCriteria(tmp)) {
 				DynamicSearchCriteriaBean criteriaBeanTemp = new DynamicSearchCriteriaBean();
 				criteriaBeanTemp.setCriteria(tmp);
 				criteriaBean.add(criteriaBeanTemp);
 			}
-		}	
+		}
 		hasDuplicate = false;
 		toggleEditTextPopupRendered();
 		defaultView();

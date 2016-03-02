@@ -14,19 +14,16 @@ L-->
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:ice="http://www.icesoft.com/icefaces/component"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ncia="http://imaging.nci.nih.gov/ncia">
                 
-<ui:param name="helpId" value="-viewsubmissionreport"/>
+<ui:param name="helpId" value="-ViewingSubmissionReports"/>
   
   <table align="center">
 				<tr>
 					<td>
-						<div class="submissionReportTitleContainer">
-							<span class="submissionReportTitle"> Submission Reports </span>
-						</div>
-					</td>
-					<td>
-						<div align="right">
+						<div class="adminToolsContainer">
+							<h:outputText value="Submission Reports " /> 
 							<ncia:help label="images/help_icon.png" helpId="#{helpId}" />
 						</div>
 					</td>

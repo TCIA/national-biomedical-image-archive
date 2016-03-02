@@ -265,6 +265,20 @@ L-->
   </navigation-rule>  
   <navigation-rule>
     <navigation-case>
+      <from-outcome>manageWorkflowItems</from-outcome>
+      <to-view-id>/manageWorkflowItems.jsf</to-view-id>
+      <redirect /> 
+    </navigation-case>
+  </navigation-rule> 
+    <navigation-rule>
+    <navigation-case>
+      <from-outcome>createWorkflow</from-outcome>
+      <to-view-id>/createWorkflow.jsf</to-view-id>
+      <redirect /> 
+    </navigation-case>
+  </navigation-rule> 
+  <navigation-rule>
+    <navigation-case>
       <from-outcome>remoteSearch</from-outcome>
       <to-view-id>/remoteSearch.jsf</to-view-id>
     </navigation-case>
@@ -405,13 +419,18 @@ L-->
       <managed-bean-class>gov.nih.nci.nbia.beans.populator.ViewMultiFrameSSBean </managed-bean-class>
       <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
-  
   <managed-bean>
     <description>Populates the databasket page for direct bookmarking</description>
     <managed-bean-name>dataBasketPopulatorMgBean</managed-bean-name>
     <managed-bean-class>gov.nih.nci.nbia.beans.populator.DataBasketPopulatorMgBean</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
+    <managed-bean>
+    <description>Populates the simple search result page for a external page load request</description>
+    <managed-bean-name>externalPubSearchPopulatorMgBean</managed-bean-name>
+    <managed-bean-class>gov.nih.nci.nbia.beans.populator.ExternalPubSearchPopulatorMgBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean> 
   <managed-bean>
     <description>Create Customized Image Series List</description>
     <managed-bean-name>customSeriesListBean</managed-bean-name>
@@ -454,7 +473,26 @@ L-->
     <managed-bean-class>gov.nih.nci.nbia.beans.searchform.aim.AimSearchWorkflowBean</managed-bean-class>
     <managed-bean-scope>session</managed-bean-scope>
   </managed-bean>
-    
+  
+  <managed-bean>
+    <description>Create Workflow Item</description>
+    <managed-bean-name>addWorkFlowItemBean</managed-bean-name>
+    <managed-bean-class>gov.nih.nci.nbia.beans.workflow.AddWorkFlowItemBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean> 
+  
+  <managed-bean>
+    <description>Manage Workflow Items</description>
+    <managed-bean-name>manageWorkFlowBean</managed-bean-name>
+    <managed-bean-class>gov.nih.nci.nbia.beans.ManageWorkflowBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean> 
+  <managed-bean>
+    <description>Manage Workflow Items</description>
+    <managed-bean-name>mngWorkFlowBean</managed-bean-name>
+    <managed-bean-class>gov.nih.nci.nbia.beans.workflow.MngWorkflowBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean> 
   <managed-bean>
     <description>Workflow Bean for Search Page</description>
     <managed-bean-name>searchWorkflowBean</managed-bean-name>
@@ -481,7 +519,7 @@ L-->
    
        
   </managed-bean>
-  <managed-bean>
+  <!--managed-bean>
     <managed-bean-name>ispyBean</managed-bean-name>
     <managed-bean-class>gov.nih.nci.nbia.beans.searchresults.ISPYBean</managed-bean-class>
     <managed-bean-scope>session</managed-bean-scope>
@@ -498,8 +536,8 @@ L-->
       <property-name>searchWorkflowBean</property-name>   
       <value>#{searchWorkflowBean}</value>   
     </managed-property>     
-  </managed-bean>   
-  <managed-bean>
+  </managed-bean-->   
+  <!--managed-bean>
     <description>for Cedara UI</description>
     <managed-bean-name>cedaraBean</managed-bean-name>
     <managed-bean-class>gov.nih.nci.nbia.beans.searchresults.CedaraBean</managed-bean-class>
@@ -513,7 +551,7 @@ L-->
       <property-name>basketBean</property-name>   
       <value>#{basketBean}</value>   
     </managed-property>      
-  </managed-bean>   
+  </managed-bean-->   
   
   <managed-bean>
     <managed-bean-name>seriesSearchResultBean</managed-bean-name>
@@ -650,7 +688,13 @@ L-->
       <renderer-class>gov.nih.nci.nbia.components.ImageTableRenderer</renderer-class>
     </renderer>
   </render-kit>
-
-
+  <validator>  
+    <validator-id>gov.nih.nci.nbia.beans.workflow.nameValidator</validator-id>  
+    <validator-class>gov.nih.nci.nbia.beans.workflow.NameValidator</validator-class>  
+  </validator>   
+<validator>  
+    <validator-id>gov.nih.nci.nbia.beans.workflow.urlValidator</validator-id>  
+    <validator-class>gov.nih.nci.nbia.beans.workflow.URLValidator</validator-class>  
+  </validator>   
 </faces-config>
 

@@ -1,7 +1,0 @@
-bin/
-classes/
-test-classes/
-build/
-test/lib/*.jar
-client-jars-full.zip
-client-jars-nodeps.zip

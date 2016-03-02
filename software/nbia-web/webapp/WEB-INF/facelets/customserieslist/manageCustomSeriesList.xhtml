@@ -8,17 +8,14 @@
                 xmlns:ncia="http://imaging.nci.nih.gov/ncia"
                 xmlns:ice="http://www.icesoft.com/icefaces/component">
 
-
-  <br/>
-  <br/>
-
   <table summary="" cellpadding="0" cellspacing="0" border="0" class="contentPage" width="80%" align="center">
     <tr>
       <td colspan="2">
-        <h2 align="center">
-          <ice:outputText value="Manage Shared List" />
-          <ncia:help alt="help" label="images/help_icon.png" helpId="-managesharedlist" />
-        </h2>
+        <div class="adminToolsContainer">
+          <h:outputText value="Manage Shared List " />
+          <ncia:help alt="help" label="images/help_icon.png" helpId="-ManagingaSharedList" />
+        </div>
+     
         <ice:form id="searchCustomSeriesListForm">
           <table cellpadding="3"
                             cellspacing="0" summary="criteria section" width="100%" >
@@ -84,9 +81,10 @@
                                          lastRowIndexVar="lastRowIndex"
                                          pageCountVar="pageCount"
                                          pageIndexVar="pageIndex">
-                        <ice:outputFormat value="{0} list found, displaying {1} records, from {2} to {3}. Page {4} / {5}" 
+                        <ice:outputFormat value="{0} {1} found, displaying {2} records, from {3} to {4}. Page {5} / {6}" 
                                           styleClass="standard" >
                           <f:param value="#{rowsCount}" />
+                          <f:param value="#{searchCustomSeriesListBean.list}"/>
                           <f:param value="#{displayedRowsCountVar}" />
                           <f:param value="#{firstRowIndex}" />
                           <f:param value="#{lastRowIndex}" />
@@ -144,7 +142,7 @@
                             <h:commandButton image="images/cancel.png"
                                              alt="Delete" title="Delete"
                                              action="#{searchCustomSeriesListBean.performDelete}" 
-		                                     onclick='if (!confirm("Are you sure you want to delete Share List &#39;#{item.name}&#39;?")) return false;'>
+		                                     onclick='if (!confirm("Are you sure you want to delete Shared List &#39;#{item.name}&#39;?")) return false;'>
                          <f:setPropertyActionListener target="#{searchCustomSeriesListBean.toDelete}"
                                                       value="#{item.id}"/>
                     </h:commandButton>

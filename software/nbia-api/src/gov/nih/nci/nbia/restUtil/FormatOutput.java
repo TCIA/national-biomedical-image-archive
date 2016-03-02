@@ -3,10 +3,10 @@ package gov.nih.nci.nbia.restUtil;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
-import java.lang.reflect.Field;
+//import java.sql.ResultSet;
+//import java.util.ArrayList;
+//import java.lang.reflect.Field;
 
 import org.owasp.esapi.ESAPI;
 
@@ -18,6 +18,52 @@ import org.owasp.esapi.ESAPI;
  */
 public class FormatOutput {
 
+	/**
+	 * This method will format data into JSON format.
+	 * 
+	 * It important to check to make sure that all DataType that are being used
+	 * is properly encoding.
+	 * 
+	 * String is currently the only dataType that is being encode by ESAPI
+	 * 
+	 * @param columns - String[]
+	 *        data    - List<Object[]>
+	 * @return - JSON array
+	 */
+	public static JSONArray toJSONArrayInstance(String[] columns, List<Object[]> data) {
+		JSONArray json = new JSONArray(); // JSON array that will be returned
+//		String temp = null;
+
+		try {
+
+			for (Object[] objects : data) {
+				JSONObject obj = new JSONObject();
+				for (int i = 0; i < columns.length; i++) {
+					//Do not think json format needs this protection so comment the encoding out
+//					if (objects[i] != null && objects[i].getClass().getName().equals("java.lang.String")) {
+//						temp = (String)objects[i]; // saving column data to temp variable
+//						temp = ESAPI.encoder().canonicalize(temp); // decoding data to base state
+//						temp = ESAPI.encoder().encodeForHTML(temp); // encoding
+//						obj.put(columns[i], temp);
+//					}
+//					else 	
+				//	System.out.println("column:"+columns[i]+"-object"+objects[i]);
+					if (objects[i]!=null)
+					{
+					    obj.put(columns[i], objects[i]);
+					} else
+					{
+						obj.put(columns[i], new Long(1));
+					}
+				}
+				json.put(obj);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return json; // return JSON array
+	}
 	/**
 	 * This method will format data into JSON format.
 	 * 
@@ -46,7 +92,8 @@ public class FormatOutput {
 //						temp = ESAPI.encoder().encodeForHTML(temp); // encoding
 //						obj.put(columns[i], temp);
 //					}
-//					else 																	
+//					else 	
+					
 					obj.put(columns[i], objects[i]);
 				}
 				json.put(obj);

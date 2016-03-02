@@ -66,7 +66,7 @@ L-->
     <!-- link 2 begins -->
     <f:subview id="simpleSearchSubview" rendered="#{securityBean.loggedIn}">
       <td height="20" class="mainMenuItem">
-         <h:outputText value="#{msg.common_searchImages}" />
+         <h:outputText style="white-space:nowrap" value="#{msg.common_searchImages}"/>
       	 <br/>
       	<ul >
       	    <li>
@@ -74,13 +74,11 @@ L-->
               </li> 
               <li>
 	      	         
-	      	         <h:commandLink action="#{searchWorkflowBean.newFreeTextSearch}"
-                                         value="Text Search"/>
+	      	         <h:commandLink action="#{searchWorkflowBean.newFreeTextSearch}" value="#{msg.common_textSearch}"/>
               </li> 
               <li>
 	      	         
-	      	         <h:commandLink action="#{searchWorkflowBean.newDynamicSearch}"
-                                         value="Advanced Search"/>
+	      	         <h:commandLink action="#{searchWorkflowBean.newDynamicSearch}" value="#{msg.common_advSearch}"/>
               </li> 
     	  </ul>  
       
@@ -211,17 +209,7 @@ L-->
 	      </li>
 	    
 	    </f:subview>
-	    <f:subview id="refImageView" rendered="#{ispyBean.isQueryFromUrl}">
-	     
-	        <li>
-	          
-	          <h:commandLink action="#{ispyBean.viewRefImage}"
-	                         value="#{msg.menu_queryRefImages}" />
-	                         
-	                        
-	        </li>
-	      
-   	    </f:subview>
+
    	 
    	 
    	 <f:subview id="changePasswordView"
@@ -271,17 +259,7 @@ L-->
 	           </li>
 	                
 	       </f:subview>
-   
-   	 
-   	 
-   	 
-   	 
-   	 
-   	 
-   	 
-   	 
-   	 
-   	 
+
     	</ul>
     </td>
     
@@ -368,18 +346,30 @@ L-->
                                  value="Edit Collection Desc" />
                                 
               </li>
-          </f:subview>   
-          
+          </f:subview>
+          <f:subview id="ManageWorkFlowItemsView" 
+           		rendered="#{securityBean.hasSuperCuratorRole}">
+ 
+            	<li>
+                  <h:commandLink id="manageWorkFlowMenuItem"
+                       action="manageWorkflowItems"
+                       value="Manage Workflow Items" />
+                      
+           	</li>
+           </f:subview>
+           <f:subview id="ManageSavedQueryView" rendered="#{securityBean.hasSuperCuratorRole}">
+           	<li>
+	   	        <h:commandLink id="manageSavedQueriesLink"
+	   	                       action="#{savedQueryBean.manageSavedQueries}"
+	   	                       value="#{msg.menu_manageSavedQueries}"/>
+	   	        
+	      </li>
+	</f:subview>
     
     </ul>
     </td>
     </f:subview>
-    
-    
-    
-    
-    
-    
+
         
      <td>
             <!-- <img src="images/mainMenuSeparator.gif" 
@@ -387,8 +377,6 @@ L-->
                  height="16"
                  alt="" /> -->
       </td>    
-    
-
     
     <!-- link 5 begins -->
     <td height="20" class="mainMenuItem"

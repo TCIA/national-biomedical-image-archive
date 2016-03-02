@@ -92,6 +92,7 @@ public class StudyDAOImpl extends AbstractDAO
             seriesDTO.setPatientId((String)row[13]);
             seriesDTO.setProject((String)row[14]);
             seriesDTO.setMaxFrameCount((String)row[16]);
+            seriesDTO.setPatientPkId(row[17].toString());
             // Try to get the study if it already exists
             StudyDTO studyDTO = studyList.get(seriesDTO.getStudyPkId());
 
@@ -138,7 +139,7 @@ public class StudyDAOImpl extends AbstractDAO
 	 * @param studyInstanceUid Study Instance UID
 	 */
 	@Transactional(propagation=Propagation.REQUIRED)
-	public List<Object[]> getPatientStudy(String collection, String patientId, String studyInstanceUid,List<SiteData> authorizedSites) throws DataAccessException
+	public List<Object[]> getPatientStudy(String collection, String patientId, String studyInstanceUid, List<String> authorizedProjAndSites) throws DataAccessException
 	{
 		String hql = "select distinct s.studyInstanceUID, s.studyDate, s.studyDesc, s.admittingDiagnosesDesc, s.studyId, " +
 				"s.patientAge, s.patient.patientId, s.patient.patientName, s.patient.patientBirthDate, s.patient.patientSex, " +
@@ -165,7 +166,8 @@ public class StudyDAOImpl extends AbstractDAO
 			paramList.add(studyInstanceUid.toUpperCase());
 			++i;
 		}
-		where.append(addSecurityGroup(authorizedSites));
+
+		where.append(addAuthorizedProjAndSites(authorizedProjAndSites));
 		if (i > 0) {
 			Object[] values = paramList.toArray(new Object[paramList.size()]);
 			rs = getHibernateTemplate().find(hql + where.toString(), values);
@@ -174,18 +176,34 @@ public class StudyDAOImpl extends AbstractDAO
 
         return rs;
 	}
-	private StringBuffer addSecurityGroup(List<SiteData> authorizedSites) {
+
+	/**
+	 * Construct the partial where clause which contains checking with authorized project and site combinations.
+	 *
+	 * This method is used for NBIA Rest API
+	 */
+	private StringBuffer addAuthorizedProjAndSites(List<String> authorizedProjAndSites) {
 		StringBuffer where = new StringBuffer();
-		String authorisedProjectName = getProjectNames(authorizedSites);
-		String authorisedSiteName = getSiteNames(authorizedSites);
-		if(authorisedProjectName != null && authorisedSiteName != null) {
-			where = where.append(" and UPPER(gs.project) in (").append(authorisedProjectName).append(")").append(" and UPPER(gs.site) in (" + authorisedSiteName+")");
+
+		if ((authorizedProjAndSites != null) && (!authorizedProjAndSites.isEmpty())){
+			where = where.append(" and gs.projAndSite in (");
+
+			for (Iterator<String> projAndSites =  authorizedProjAndSites.iterator(); projAndSites .hasNext();) {
+	    		String str = projAndSites.next();
+	            where.append (str);
+
+	            if (projAndSites.hasNext()) {
+	            	where.append(",");
+	            }
+	        }
+			where.append(")");
 		}
+		System.out.println("&&&&&&&&&&&&where clause for project and group=" + where.toString());
 		return where;
 	}
 
 	/////////////////////////////////////PRIVATE/////////////////////////////////////////
-    private static final String SQL_QUERY_SELECT = "SELECT distinct series.id, study.id, study.studyInstanceUID, series.seriesInstanceUID, study.studyDate, study.studyDesc, series.imageCount, series.seriesDesc, series.modality, ge.manufacturer, series.seriesNumber, series.annotationsFlag, series.totalSize, series.patientId, study.patient.dataProvenance.project, series.annotationTotalSize, series.maxFrameCount  ";
+    private static final String SQL_QUERY_SELECT = "SELECT distinct series.id, study.id, study.studyInstanceUID, series.seriesInstanceUID, study.studyDate, study.studyDesc, series.imageCount, series.seriesDesc, series.modality, ge.manufacturer, series.seriesNumber, series.annotationsFlag, series.totalSize, series.patientId, study.patient.dataProvenance.project, series.annotationTotalSize, series.maxFrameCount, series.patientPkId  ";
     private static final String SQL_QUERY_FROM = "FROM Study study join study.generalSeriesCollection series join series.generalEquipment ge ";
     private static final String SQL_QUERY_WHERE = "WHERE series.visibility = '1' ";
 
@@ -236,7 +254,7 @@ public class StudyDAOImpl extends AbstractDAO
 		if (seriesPkIds.size() == 0) {
 			return new ArrayList<StudyDTO>();
 		}
-		String selectStmt = "SELECT distinct series.id, study.id, study.studyInstanceUID, series.seriesInstanceUID, study.studyDate, study.studyDesc, series.imageCount, series.seriesDesc, series.modality, ge.manufacturer, series.seriesNumber, series.annotationsFlag, series.totalSize, series.patientId, study.patient.dataProvenance.project, series.annotationTotalSize , ge.manufacturerModelName, ge.softwareVersions ";
+		String selectStmt = "SELECT distinct series.id, study.id, study.studyInstanceUID, series.seriesInstanceUID, study.studyDate, study.studyDesc, series.imageCount, series.seriesDesc, series.modality, ge.manufacturer, series.seriesNumber, series.annotationsFlag, series.totalSize, series.patientId, study.patient.dataProvenance.project, series.annotationTotalSize , ge.manufacturerModelName, ge.softwareVersions, series.patientPkId ";
 		String fromStmt = SQL_QUERY_FROM;
 		String whereStmt = SQL_QUERY_WHERE;
 		String oderBy = " Order by study.patient.dataProvenance.project,series.patientId,study.studyDate, study.studyDesc, series.modality, series.seriesDesc,ge.manufacturer, ge.manufacturerModelName, ge.softwareVersions, series.seriesInstanceUID";
@@ -310,6 +328,7 @@ public class StudyDAOImpl extends AbstractDAO
 
 			seriesDTO.setManufacturerModelName((String) row[16]);
 			seriesDTO.setSoftwareVersion((String) row[17]);
+			seriesDTO.setPatientPkId(row[18].toString());
 			// Try to get the study if it already exists
 			StudyDTO studyDTO = new StudyDTO();
 			studyDTO.setStudyId(row[2].toString());
@@ -322,35 +341,4 @@ public class StudyDAOImpl extends AbstractDAO
 		}
 		return resultList;
 	}
-
-		private String getProjectNames(Collection<SiteData> sites) {
-			if(sites == null || sites.isEmpty()) {
-				return null;
-			}
-			String projectNameStmt = "";
-	    	for (Iterator<SiteData> i = sites.iterator(); i.hasNext();) {
-	    		SiteData str = i.next();
-	            projectNameStmt += ("'" + str.getCollection().toUpperCase() + "'");
-
-	            if (i.hasNext()) {
-	            	projectNameStmt += ",";
-	            }
-	        }
-	    	return projectNameStmt;
-	    }
-		private String getSiteNames(Collection<SiteData> sites) {
-			if(sites == null || sites.isEmpty()) {
-				return null;
-			}
-			String siteWhereStmt = "";
-	    	for (Iterator<SiteData> i = sites.iterator(); i.hasNext();) {
-	    		SiteData str = i.next();
-	            siteWhereStmt += ("'" + str.getSiteName().toUpperCase() + "'");
-
-	            if (i.hasNext()) {
-	            	siteWhereStmt += ",";
-	            }
-	        }
-	    	return siteWhereStmt;
-    }
 }

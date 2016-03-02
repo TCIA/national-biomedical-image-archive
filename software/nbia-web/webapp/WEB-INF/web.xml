@@ -60,9 +60,14 @@ L-->
     <param-name>com.icesoft.faces.synchronousUpdate</param-name>
     <param-value>false</param-value>
   </context-param>
+
+<context-param>
+      <param-name>com.icesoft.faces.heartbeatRetries</param-name>
+      <param-value>33</param-value>
+  </context-param>
   <context-param>
     <param-name>com.icesoft.faces.connectionTimeout</param-name>
-    <param-value>1000000</param-value>
+    <param-value>1800000</param-value>
   </context-param>
   <!-- added by lrt to deal with long running adds to the shopping cart -->
   <context-param>
@@ -112,14 +117,10 @@ L-->
 		<param-name>Owasp.CsrfGuard.Config.Print</param-name>
 		<param-value>true</param-value>
 	</context-param>
-
+	
   <filter>
     <filter-name>Security Page Filter</filter-name>
     <filter-class>gov.nih.nci.nbia.security.SecurityCheckFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>URL Parameter Filter</filter-name>
-    <filter-class>gov.nih.nci.nbia.ispy.URLParameterFilter</filter-class>
   </filter>
   <filter>
     <filter-name>Pretty Filter</filter-name>
@@ -135,10 +136,6 @@ L-->
    </filter-mapping>
 
   <filter-mapping>
-    <filter-name>URL Parameter Filter</filter-name>
-    <url-pattern>*.jsf</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
     <filter-name>Security Page Filter</filter-name>
     <url-pattern>*.jsf</url-pattern>
   </filter-mapping>
@@ -153,9 +150,9 @@ L-->
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
   </listener>
-  <listener>
+  <!--listener>
     <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-  </listener> 
+  </listener--> 
 <listener>		
 	<listener-class>org.owasp.csrfguard.CsrfGuardServletContextListener</listener-class>	
 </listener>	
@@ -223,6 +220,11 @@ L-->
     <servlet-class>gov.nih.nci.nbia.servlet.PublicOnlyThumbnailServlet</servlet-class>
     <load-on-startup> 1 </load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>WADOServlet</servlet-name>
+    <servlet-class>gov.nih.nci.nbia.servlet.WADOServlet</servlet-class>
+    <load-on-startup> 1 </load-on-startup>
+  </servlet>  
 <!-- CSRF -->
 <servlet>
      <servlet-name>JavaScriptServlet</servlet-name>
@@ -273,6 +275,10 @@ L-->
   </servlet-mapping>
   <!-- Steve Moore Query Tool end -->
 
+  <servlet-mapping>
+    <servlet-name>WADOServlet</servlet-name>
+    <url-pattern>/wado</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>publicThumbnailServlet</servlet-name>
     <url-pattern>/publicThumbnails</url-pattern>

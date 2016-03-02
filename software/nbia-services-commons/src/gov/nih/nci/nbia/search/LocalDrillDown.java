@@ -29,7 +29,6 @@ import gov.nih.nci.ncia.search.SeriesSearchResult;
 import gov.nih.nci.ncia.search.StudySearchResult;
 import gov.nih.nci.ncia.search.StudySearchResultImpl;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +50,6 @@ public class LocalDrillDown implements DrillDown {
 	public void setThumbnailURLResolver(ThumbnailURLResolver thumbnailURLResolver) {
 		this.thumbnailURLResolver = thumbnailURLResolver;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -173,7 +171,7 @@ public class LocalDrillDown implements DrillDown {
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	/**
 	 * This method is only on the local drill down.  It's used by the
 	 * qc tool.  This method does not care about visibility status.
@@ -232,6 +230,7 @@ public class LocalDrillDown implements DrillDown {
         assert thumbnailURLResolver != null;
 
 		try {
+			System.out.println("in retrieveImagesbySeriesPkIDEx");
 	        ImageDAO imageDAO = (ImageDAO)SpringApplicationContext.getBean("imageDAO");
 	        List<ImageDTO> imageDtoList = imageDAO.findImagesbySeriesPkID(seriesPkIds);
 
@@ -325,6 +324,7 @@ public class LocalDrillDown implements DrillDown {
 		result.setId(imageDTO.getImagePkId());
 		result.setSopInstanceUid(imageDTO.getSopInstanceUid());
 		result.setSeriesInstanceUid(imageDTO.getSeriesInstanceUid());
+		result.setStudyInstanceUid(imageDTO.getStudyInstanceUid());
 		result.setSeriesId(imageDTO.getSeriesPkId());
 		result.setInstanceNumber(imageDTO.getInstanceNumber());
 		result.setSize(imageDTO.getSize());
@@ -339,6 +339,7 @@ public class LocalDrillDown implements DrillDown {
 		result.setSopInstanceUid(imageDTO.getSopInstanceUid());
 		result.setSeriesInstanceUid(imageDTO.getSeriesInstanceUid());
 		result.setSeriesId(imageDTO.getSeriesPkId());
+		result.setStudyInstanceUid(imageDTO.getStudyInstanceUid());
 		result.setInstanceNumber(imageDTO.getInstanceNumber());
 		result.setSize(imageDTO.getSize());
 		result.associateLocation(LocalNode.getLocalNode());

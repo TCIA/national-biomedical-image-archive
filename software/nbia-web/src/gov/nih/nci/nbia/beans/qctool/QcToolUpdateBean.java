@@ -26,9 +26,12 @@ import gov.nih.nci.nbia.util.SpringApplicationContext;
 import gov.nih.nci.nbia.util.StringUtil;
 import gov.nih.nci.nbia.util.Util;
 import gov.nih.nci.ncia.dto.DicomTagDTO;
+import gov.nih.nci.ncia.search.APIURLHolder;
 import gov.nih.nci.ncia.search.ImageSearchResult;
 import gov.nih.nci.ncia.search.ImageSearchResultEx;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -359,7 +362,7 @@ public class QcToolUpdateBean {
 			LocalDrillDown drillDown = new LocalDrillDown();
 			drillDown
 					.setThumbnailURLResolver(new DefaultThumbnailURLResolver());
-
+            
 			if (isHasMultiFrame()) {
 				List<ImageSearchResultEx> imageList = Arrays.asList(drillDown
 						.retrieveImagesForSeriesEx(seriesId));
@@ -367,6 +370,7 @@ public class QcToolUpdateBean {
 				LocalDicomTagViewer ldtv = new LocalDicomTagViewer();
 				tagInfo = ldtv.viewDicomHeader(imageList.get(Integer.parseInt(getSelectedImgNumField())-1).getId());
 				currentSeriesSize = imageList.size();
+				createLink(imageList.get(imageCount));
 			}else {
 				
 				
@@ -376,7 +380,9 @@ public class QcToolUpdateBean {
 				LocalDicomTagViewer ldtv = new LocalDicomTagViewer();
 				tagInfo = ldtv.viewDicomHeader(imageList.get(imageCount).getId());
 				currentSeriesSize = imageList.size();
+				createLink(imageList.get(imageCount));
 			}
+			
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -587,6 +593,24 @@ public class QcToolUpdateBean {
 		this.selectedImgNumField = selectedImgNumField;
 	}
 
+	public String getImageLink() {
+		return imageLink;
+	}
+
+	public void setImageLink(String imageLink) {
+		this.imageLink = imageLink;
+	}
+
+    private void createLink(ImageSearchResult imageSearchResult)
+    {
+        SecurityBean secure = BeanManager.getSecurityBean();
+        String userName = secure.getUsername();
+    	String url = APIURLHolder.getUrl()+"/nbia-api/services/o/wado?contentType=application/dicom&objectUID="+
+    	imageSearchResult.getSopInstanceUid()+"&oviyamId="+APIURLHolder.addUser(userName)+
+		"&wadoUrl="+APIURLHolder.getWadoUrl();
+		setImageLink(url);
+    }
+
 
 	// //////////////////////////PRIVATE///////////////////////////////////////
 	private static final String DELETE = "Delete";
@@ -603,6 +627,7 @@ public class QcToolUpdateBean {
 	private String comments = INITIAL_COMMENT;
 	private String currDicomSopId;
 	private List<DicomTagDTO> tagInfo;
+	private String imageLink;
 	private String seriesId;
 	private int selectedRow;
 	private int imageCount = 0;

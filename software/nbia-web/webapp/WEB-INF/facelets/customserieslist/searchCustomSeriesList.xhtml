@@ -17,16 +17,13 @@ L-->
                 xmlns:ncia="http://imaging.nci.nih.gov/ncia"
                 xmlns:ice="http://www.icesoft.com/icefaces/component">
 
-
-  <br/>
-  <br/>
-
   <table summary="" cellpadding="0" cellspacing="0" border="0" class="contentPage" width="80%" align="center">
     <tr>
       <td colspan="2">
-        <h2 align="center">
-          <ice:outputText value="Search Shared List" />
-        </h2>
+        <div class="adminToolsContainer">
+          <h:outputText value="Search Shared List " />
+          <ncia:help label="images/help_icon.png" helpId="-SearchingaSharedList" />
+        </div>
         <ice:form id="searchCustomSeriesListForm">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
@@ -34,14 +31,15 @@ L-->
                 <ice:outputLabel for="name" value="Shared List Name: "/>
               </td>
               <td colspan="5">
-                <ice:inputText id="name" 
+                <ice:inputText id="cname" 
                                required="true" 
                                immediate="true"
+                               label="value"
                                value="#{searchCustomSeriesListBean.name}"
                                size="110"
                                styleClass="formField"/>
                 <br/>
-                <h:message id="nameError" for="name" infoClass="infoLabel"/>
+                <h:message id="nameError" for="cname" infoClass="infoLabel" style="color:#FF0000;"/>
               </td>
             </tr>
               
@@ -151,14 +149,10 @@ L-->
                                  resizable="true" 
                                  rendered="#{not empty searchCustomSeriesListBean.results}"
                                  width="100%" 
-                                 border="1" 
                                  cellpadding="0" 
                                  cellspacing="0" 
-                                 styleClass="dataTable" 
-                                 headerClass="dataTableHeader" 
                                  value="#{searchCustomSeriesListBean.results}"
                                  binding="#{searchCustomSeriesListBean.table}"
-                                 rowClasses="dataRowLight, dataRowDark" 
                                  var="item" 
                                  rows="#{searchCustomSeriesListBean.selectedDispItemNum}">
                     <ice:column id="name">
@@ -230,9 +224,6 @@ L-->
         </ice:form>     
         <br/>
         <br/>
-      </td>
-      <td valign="top">
-        <ncia:help label="images/help_icon.png" helpId="-searchsharedlist" />
       </td>
     </tr>
   </table>

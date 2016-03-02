@@ -10,6 +10,7 @@ package gov.nih.nci.nbia.security;
 
 
 import gov.nih.nci.nbia.beans.security.SecurityBean;
+import gov.nih.nci.nbia.util.NCIAConfig;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -29,8 +30,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 
+import gov.nih.nci.ncia.search.APIURLHolder;
 
 /**
  * Taken from sun software forums
@@ -57,18 +60,21 @@ public class SecurityCheckFilter implements Filter {
 
         HttpServletRequest hreq = (HttpServletRequest) request;
         HttpSession session = hreq.getSession();
-           
+
+        logger.info("!!! doing SecurityCheckFilter");
+        // added to know the current address
+        // and current user for Oviyam
+        	try {
+				APIURLHolder.setUrl(NCIAConfig.getImageServerUrl());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
         String checkforloginpage = hreq.getServletPath();
+
         String referer = (String)session.getAttribute("previous");
-        logger.debug("!!!!previous= "+ referer);
-        
-        logger.debug("!!!!Now = "+ checkforloginpage);
-//        if (referer == null) {
-//        	
-//        	referer = "";
-//        }
         session.setAttribute("previous", checkforloginpage);
-      
+
         logger.info("session:"+session.getId());
     	logger.info("request:"+hreq.getRequestURL());
     	logger.info("checkforloginpage:"+checkforloginpage);
@@ -90,23 +96,12 @@ public class SecurityCheckFilter implements Filter {
             }
             logger.info("loggedIn:"+loggedIn);
             if (!loggedIn) {
-            	//get the value of request
-//            	Map<String, Object> orgReq =saveRequestInfo(hreq);
-//            	// invalidate the session
-//				session.invalidate();
-//				if(referer != null) {
-//					// create a new session
-//					session = hreq.getSession(true);
-//					session.setAttribute("originalRequest", orgReq);
-//				}
-//            	//RequestDispatcher rd = request.getRequestDispatcher("/login.jsf");
-            	//rd.forward(request, response);
             	session.setAttribute("originalRequest", saveRequestInfo(hreq));
             	HttpServletResponse httpServletResponse = (HttpServletResponse)response;
             	httpServletResponse.sendRedirect("/ncia/login.jsf");
                 return;
             }
-            
+
             if (loggedIn && referer.endsWith("login.jsf") && checkforloginpage.endsWith("home.jsf"))
             {
 				// Change the session ID for fixing sessionID fixation problem
@@ -119,7 +114,7 @@ public class SecurityCheckFilter implements Filter {
 						attributes.put(name, session.getAttribute(name));
 					}
 				}
-				
+
 				// invalidate the session
 				session.invalidate();
 
@@ -135,7 +130,7 @@ public class SecurityCheckFilter implements Filter {
         // deliver request to next filter
         chain.doFilter(request, response);
     }
-    
+
     public void refresh() {
         FacesContext context = FacesContext.getCurrentInstance();
         Application application = context.getApplication();
@@ -171,6 +166,7 @@ public class SecurityCheckFilter implements Filter {
                !checkforloginpage.endsWith("welcome.jsf") &&
                !checkforloginpage.endsWith("registerMain.jsf") &&
                !checkforloginpage.endsWith("accountSupport.jsf") &&
+               !checkforloginpage.contains("externalLinks.jsf") &&
               checkforloginpage.endsWith(".jsf");
     }
 }

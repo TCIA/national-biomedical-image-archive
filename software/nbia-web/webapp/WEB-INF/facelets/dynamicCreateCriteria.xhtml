@@ -27,6 +27,9 @@ L-->
                                 <ice:selectManyCheckbox id="dslctQcStatus" value="#{dynamicQcSearchBean.selectedQcStatus}" partialSubmit="false" style="white-space:nowrap; ">
                                 <f:selectItems id="slctStatisItms" value="#{dynamicQcSearchBean.qcStatusItems}" />
                                 </ice:selectManyCheckbox>
+                                <!-- ice:selectManyMenu id="dslctQcStatus" value="#{dynamicQcSearchBean.selectedQcStatus}" partialSubmit="false" style="white-space:nowrap; ">
+                                <f:selectItems id="slctStatisItms" value="#{dynamicQcSearchBean.qcStatusItems}" />
+                                </ice:selectManyMenu-->
                            </td>
                       </tr>
                       <tr>
@@ -116,8 +119,7 @@ L-->
                                              onclick="if (!checkCriteriaAndShowProgress(#{dynamicQcSearchBean.criteriaLength})){return false;}"/>
                           <f:verbatim>&amp;nbsp;</f:verbatim>
                           <ice:commandButton image="images/reset.gif" alt="reset"
-                                             action="#{dynamicQcSearchBean.resetAction}" 
-                                             onclick="document.getElementById('MAINbody:qcToolSearchCritForm:qcToolDeleteView:j_id290:0:inputValue').value='';"/>
+                                             action="#{dynamicQcSearchBean.resetAction}"/>
                             </td>
                             </tr>
                     </table>

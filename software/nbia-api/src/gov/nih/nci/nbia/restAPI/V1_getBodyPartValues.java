@@ -37,10 +37,10 @@ import javax.ws.rs.core.Response;
 
 
 @Path("/v1/getBodyPartValues")
-public class V1_getBodyPartValues {
+public class V1_getBodyPartValues extends getData{
 	private static final String column="BodyPartExamined";
 	public final static String TEXT_CSV = "text/csv";
-	public final static MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
+
 	@Context private HttpServletRequest httpRequest;
 	/**
 	 * This method get a set of body part values filtered by query keys
@@ -52,52 +52,15 @@ public class V1_getBodyPartValues {
 
 	public Response  constructResponse(@QueryParam("Collection") String collection, @QueryParam("format") String format,
 			@QueryParam("Modality") String modality) {
-		String returnString = null;
-		List<String> data = getDataFromDB (collection, modality);
-
-		if ((data != null) && (data.size() > 0)) {
-			if ((format == null) || (format.equalsIgnoreCase("JSON"))) {
-				returnString = FormatOutput.toJSONArray(column, data).toString();
-				return Response.ok(returnString).type("application/json").build();
-				//returnString = "test now";
-			}
-
-			if (format.equalsIgnoreCase("HTML")) {
-				returnString = FormatOutput.toHtml(column, data);
-				return Response.ok(returnString).type("text/html").build();
-			}
-
-			if (format.equalsIgnoreCase("XML")) {
-				returnString = FormatOutput.toXml(column, data);
-				return Response.ok(returnString).type("application/xml").build();
-			}
-			if (format.equalsIgnoreCase("CSV")) {
-				returnString = FormatOutput.toCsv(column, data);
-				return Response.ok(returnString).type("text/csv").build();
-			}
-
-		}
-		else {
-			return Response.status(500)
-					.entity("No Body Part Value found")
-					.build();
-		}
-		return Response.status(500)
-				.entity("Server was not able to process your request")
-				.build();
-	}
-
-
-	private List<String> getDataFromDB (String collection, String modality) {
-		List<String> results = null;
-		List<SiteData> authorisedSites = (List)httpRequest.getAttribute("authorizedCollections");
-		GeneralSeriesDAO tDao = (GeneralSeriesDAO)SpringApplicationContext.getBean("generalSeriesDAO");
+		List<String> authorizedCollections = null;
 		try {
-			results = tDao.getBodyPartValues(collection, modality,authorisedSites);
+			authorizedCollections = getPublicCollections();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		catch (DataAccessException ex) {
-			ex.printStackTrace();
-		}
-		return (List<String>) results;
+		
+		List<String> data = getBodyPartValues(collection, modality, authorizedCollections);
+		return formatResponse(format, data, column);
 	}
 }

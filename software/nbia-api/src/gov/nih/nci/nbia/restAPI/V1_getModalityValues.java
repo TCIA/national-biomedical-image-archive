@@ -35,12 +35,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.authentication.BadCredentialsException;
+
 
 @Path("/v1/getModalityValues")
-public class V1_getModalityValues {
+public class V1_getModalityValues extends getData{
 	private static final String column="Modality";
 	public final static String TEXT_CSV = "text/csv";
-	public final static MediaType TEXT_CSV_TYPE = new MediaType("text", "csv");
+
 	@Context private HttpServletRequest httpRequest;
 	/**
 	 * This method get a set of all modality values (CT, MR, ...) filtered by query keys
@@ -52,53 +57,14 @@ public class V1_getModalityValues {
 
 	public Response  constructResponse(@QueryParam("Collection") String collection, @QueryParam("format") String format,
 			@QueryParam("BodyPartExamined") String bodyPart) {
-
-		String returnString = null;
-		List<String> data = getDataFromDB (collection, bodyPart);
-
-		if ((data != null) && (data.size() > 0)) {
-			if ((format == null) || (format.equalsIgnoreCase("JSON"))) {
-				returnString = FormatOutput.toJSONArray(column, data).toString();
-				return Response.ok(returnString).type("application/json").build();
-				//returnString = "test now";
-			}
-
-			if (format.equalsIgnoreCase("HTML")) {
-				returnString = FormatOutput.toHtml(column, data);
-				return Response.ok(returnString).type("text/html").build();
-			}
-
-			if (format.equalsIgnoreCase("XML")) {
-				returnString = FormatOutput.toXml(column, data);
-				return Response.ok(returnString).type("application/xml").build();
-			}
-			if (format.equalsIgnoreCase("CSV")) {
-				returnString = FormatOutput.toCsv(column, data);
-				return Response.ok(returnString).type("text/csv").build();
-			}
-
-		}
-		else {
-			return Response.status(500)
-					.entity("No Modality found")
-					.build();
-		}
-		return Response.status(500)
-				.entity("Server was not able to process your request")
-				.build();
-	}
-
-
-	private List<String> getDataFromDB (String collection, String bodyPart) {
-		List<String> results = null;
-		List<SiteData> authorisedSites = (List)httpRequest.getAttribute("authorizedCollections");
-		GeneralSeriesDAO tDao = (GeneralSeriesDAO)SpringApplicationContext.getBean("generalSeriesDAO");
+		List<String> authorizedCollections = null;
 		try {
-			results = tDao.getModalityValues(collection, bodyPart,authorisedSites);
+			authorizedCollections = getPublicCollections();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		catch (DataAccessException ex) {
-			ex.printStackTrace();
-		}
-		return (List<String>) results;
+		List<String> data = getModalityValues (collection, bodyPart, authorizedCollections);
+		return formatResponse(format, data, column);
 	}
 }

@@ -22,9 +22,10 @@ L-->
 <table summary="" cellpadding="5" cellspacing="0" border="0" class="contentPage" width="80%" align="center">
   <tr>
     <td colspan="2">
-      <h2 align="center"> 
-        <ice:outputText value="Create Shared List" />
-      </h2>
+      <div class="adminToolsContainer">
+        <h:outputText value="Create Shared List " />
+        <ncia:help label="images/help_icon.png" helpId="-CreatingaSharedList" />
+      </div>
       <table border="0" cellpadding="5" cellspacing="0" width="100%" class="promptbox" style="display: block;">                 
         <tr>
           <td colspan="1">
@@ -33,6 +34,7 @@ L-->
           <td colspan="5">
             <ice:inputText id="name"
                            partialSubmit="true"
+                           label="value"
                            value="#{customSeriesListBean.name}"
                            validator="#{customSeriesListBean.validateName}"
                            required="true"
@@ -40,7 +42,7 @@ L-->
                            styleClass="formField"
                            title="Name your list. The length cannot be longer than 200 characters."/> 
             <br/>
-            <h:message id="nameError" for="name" infoClass="errorLabel"/>
+            <h:message id="nameError" for="name" infoClass="errorLabel" style="color:#FF0000;"/>
           </td>
         </tr>
         <tr>
@@ -259,9 +261,6 @@ L-->
          </table>
        </f:subview>   
        <br/>
-     </td>
-     <td valign="top">
-       <ncia:help label="images/help_icon.png" helpId="-createsharedlist" />
      </td>
    </tr>
  </table>
